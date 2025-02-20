@@ -1,42 +1,53 @@
-const API_KEY =
-  "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";
-
-// Initialize Speech Recognition
 const recognition = new (window.SpeechRecognition ||
   window.webkitSpeechRecognition)();
-recognition.continuous = true;
-recognition.interimResults = false;
+recognition.continuous = true; // Keeps listening after each speech input
+recognition.interimResults = false; // Prevents partial results
 recognition.lang = "en-US";
 
-// UI Elements
 const micButton = document.querySelector(".mic-active");
 const chatMessages = document.querySelector(".chat-messages");
 
-// Start Listening
+let isListening = false;
+let finalTranscript = "";
+
+// Toggle Listening - Only needs to be clicked once
+micButton.addEventListener("click", () => {
+  if (isListening) {
+    stopListening();
+  } else {
+    startListening();
+  }
+});
+
 function startListening() {
   recognition.start();
   micButton.classList.add("active");
+  micButton.textContent = "⏹ Stop Listening";
+  isListening = true;
 }
 
-// Stop Listening
 function stopListening() {
   recognition.stop();
   micButton.classList.remove("active");
+  micButton.textContent = "🎤 Start Listening";
+  isListening = false;
 }
 
-// Process Recognized Speech
 recognition.onresult = async function (event) {
-  let transcript = event.results[event.results.length - 1][0].transcript.trim();
-  chatMessages.innerHTML += `<br><b>You:</b> ${transcript}`;
+  finalTranscript =
+    event.results[event.results.length - 1][0].transcript.trim();
+  console.log("User said:", finalTranscript);
 
-  console.log("User said:", transcript);
+  if (finalTranscript) {
+    chatMessages.innerHTML += `<br><b>You:</b> ${finalTranscript}`;
 
-  try {
-    const response = await sendToOpenAI(transcript);
-    displayResponse(response);
-  } catch (error) {
-    console.error("OpenAI API Error:", error);
-    displayResponse("⚠ AI is currently unavailable. Please try again later.");
+    try {
+      const response = await sendToOpenAI(finalTranscript);
+      displayResponse(response);
+    } catch (error) {
+      console.error("OpenAI API Error:", error);
+      displayResponse("⚠ AI is currently unavailable. Please try again later.");
+    }
   }
 };
 
@@ -46,10 +57,10 @@ async function sendToOpenAI(text) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${API_KEY}`,
+        Authorization: `Bearer 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`, // Replace with backend call
       },
       body: JSON.stringify({
-        model: "whisper-1",
+        model: "gpt-3.5-turbo",
         messages: [{ role: "user", content: text }],
       }),
     });
