@@ -49,7 +49,7 @@ async function sendToOpenAI(text) {
         Authorization: `Bearer ${API_KEY}`,
       },
       body: JSON.stringify({
-        model: "gpt-3.5-turbo",
+        model: "whisper-1",
         messages: [{ role: "user", content: text }],
       }),
     });
