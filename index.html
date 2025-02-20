@@ -1,231 +1,317 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Language Mentor AI Agent</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link href="styles.css" rel="stylesheet" />
     <script src="tailwind.config.js"></script>
-</head>
-<body class="h-screen flex flex-col bg-gray-50">
+  </head>
+  <body class="h-screen flex flex-col bg-gray-50">
     <!-- Header section -->
     <header class="bg-white shadow-md flex-none">
-        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-                <div class="flex items-center">
-                    <i class="fas fa-language text-primary-600 text-2xl sm:text-4xl mr-2"></i>
-                    <span class="text-lg sm:text-2xl font-bold text-gray-800">Language Mentor AI Agent</span>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <button class="lg:hidden inline-flex items-center px-4 py-2 text-gray-600 hover:text-primary-600 transition duration-300" onclick="toggleSuggestions()">
-                        <i class="fas fa-lightbulb mr-2"></i>
-                        <span>View Suggestions</span>
-                    </button>
-                    <button class="inline-flex items-center px-4 py-2 text-gray-600 hover:text-primary-600 transition duration-300">
-                        <i class="fas fa-history mr-2"></i>
-                        <span class="hidden sm:inline">History</span>
-                    </button>
-                    <button class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-lg transition duration-300">
-                        <i class="fas fa-plus mr-2"></i>
-                        <span class="hidden sm:inline">New Session</span>
-                    </button>
-                </div>
-            </div>
-        </nav>
+      <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div
+          class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0"
+        >
+          <div class="flex items-center">
+            <i
+              class="fas fa-language text-primary-600 text-2xl sm:text-4xl mr-2"
+            ></i>
+            <span class="text-lg sm:text-2xl font-bold text-gray-800"
+              >Language Mentor AI Agent</span
+            >
+          </div>
+          <div class="flex items-center space-x-4">
+            <button
+              class="lg:hidden inline-flex items-center px-4 py-2 text-gray-600 hover:text-primary-600 transition duration-300"
+              onclick="toggleSuggestions()"
+            >
+              <i class="fas fa-lightbulb mr-2"></i>
+              <span>View Suggestions</span>
+            </button>
+            <button
+              class="inline-flex items-center px-4 py-2 text-gray-600 hover:text-primary-600 transition duration-300"
+            >
+              <i class="fas fa-history mr-2"></i>
+              <span class="hidden sm:inline">History</span>
+            </button>
+            <button
+              class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-lg transition duration-300"
+            >
+              <i class="fas fa-plus mr-2"></i>
+              <span class="hidden sm:inline">New Session</span>
+            </button>
+          </div>
+        </div>
+      </nav>
     </header>
 
     <!-- Add this after the header section -->
     <div class="bg-gray-100 border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-            <div class="flex justify-center space-x-4">
-                <button class="mode-button active" data-mode="chat">
-                    <i class="fas fa-comments mr-2"></i>
-                    Chat Mode
-                </button>
-                <button class="mode-button" data-mode="voice">
-                    <i class="fas fa-microphone mr-2"></i>
-                    Voice Mode
-                </button>
-                <button class="mode-button" data-mode="avatar">
-                    <i class="fas fa-user-circle mr-2"></i>
-                    Avatar Mode
-                </button>
-            </div>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+        <div class="flex justify-center space-x-4">
+          <button class="mode-button active" data-mode="chat">
+            <i class="fas fa-comments mr-2"></i>
+            Chat Mode
+          </button>
+          <button class="mode-button" data-mode="voice">
+            <i class="fas fa-microphone mr-2"></i>
+            Voice Mode
+          </button>
+          <button class="mode-button" data-mode="avatar">
+            <i class="fas fa-user-circle mr-2"></i>
+            Avatar Mode
+          </button>
         </div>
+      </div>
     </div>
 
     <!-- Main Content -->
     <main class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
-        <!-- Chat Section -->
-        <div class="flex-1 flex flex-col bg-white mobile-chat-container">
-            <!-- Chat Messages -->
-            <div class="flex-1 overflow-y-auto p-4 space-y-4 chat-messages">
-                <!-- Initial Bot Message -->
-                <div class="flex items-start max-w-3xl">
-                    <div class="flex-shrink-0">
-                        <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
-                            <i class="fas fa-language text-primary-600"></i>
-                        </div>
-                    </div>
-                    <div class="ml-3 bg-gray-100 rounded-lg p-4">
-                        <p class="text-gray-800">Hello! I'm your AI language Mentor. I can help you learn and practice languages. Just tell me what you want to learn, and I'll assist you with exercises and explanations.</p>
-                    </div>
-                </div>
-
-                <!-- User Issue -->
-                <div class="flex items-start max-w-3xl ml-auto">
-                    <div class="mr-3 bg-primary-100 rounded-lg p-4">
-                        <p class="text-gray-800">I want to improve my French speaking skills.</p>
-                    </div>
-                    <div class="flex-shrink-0">
-                        <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                            <i class="fas fa-user text-gray-600"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Bot Response 1 -->
-                <div class="flex items-start max-w-3xl">
-                    <div class="flex-shrink-0">
-                        <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
-                            <i class="fas fa-language text-primary-600"></i>
-                        </div>
-                    </div>
-                    <div class="ml-3 space-y-4">
-                        <div class="bg-gray-100 rounded-lg p-4">
-                            <p class="text-gray-800">That's great! To help you improve your French speaking skills, could you please provide:</p>
-                            <ul class="list-disc ml-4 mt-2 text-gray-600">
-                                <li>Your current level of French (beginner, intermediate, advanced)</li>
-                                <li>Specific areas you want to focus on (vocabulary, grammar, conversation)</li>
-                                <li>Any particular topics or themes you're interested in?</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- User Response -->
-                <div class="flex items-start max-w-3xl ml-auto">
-                    <div class="mr-3 bg-primary-100 rounded-lg p-4">
-                        <p class="text-gray-800">I'm at an intermediate level. I want to focus on conversation and vocabulary related to travel.</p>
-                    </div>
-                    <div class="flex-shrink-0">
-                        <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                            <i class="fas fa-user text-gray-600"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Bot Final Response -->
-                <div class="flex items-start max-w-3xl">
-                    <div class="flex-shrink-0">
-                        <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
-                            <i class="fas fa-language text-primary-600"></i>
-                        </div>
-                    </div>
-                    <div class="ml-3 bg-gray-100 rounded-lg p-4">
-                        <p class="text-gray-800">Thank you for sharing that information! Let's start with some travel-related vocabulary and practice a conversation. Would you like to begin with some common phrases or vocabulary words?</p>
-                    </div>
-                </div>
+      <!-- Chat Section -->
+      <div class="flex-1 flex flex-col bg-white mobile-chat-container">
+        <!-- Chat Messages -->
+        <div class="flex-1 overflow-y-auto p-4 space-y-4 chat-messages">
+          <!-- Initial Bot Message -->
+          <div class="flex items-start max-w-3xl">
+            <div class="flex-shrink-0">
+              <div
+                class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center"
+              >
+                <i class="fas fa-language text-primary-600"></i>
+              </div>
             </div>
+            <div class="ml-3 bg-gray-100 rounded-lg p-4">
+              <p class="text-gray-800">
+                Hello! I'm your AI language Mentor. I can help you learn and
+                practice languages. Just tell me what you want to learn, and
+                I'll assist you with exercises and explanations.
+              </p>
+            </div>
+          </div>
 
-            <!-- Chat Input -->
-            <div class="border-t border-gray-200 p-4 bg-white">
-                <div class="max-w-3xl mx-auto flex items-center space-x-4">
-                    <button class="text-gray-400 hover:text-primary-600">
-                        <i class="fas fa-paperclip text-xl"></i>
-                    </button>
-                    <input type="text" placeholder="Type your message..." class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary-500">
-                    <button class="bg-primary-600 hover:bg-primary-700 text-white rounded-lg px-4 py-2 transition duration-300">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
-                    <button class="bg-primary-600 hover:bg-primary-700 text-white rounded-lg px-4 py-2 transition duration-300" id="micButton" onclick="toggleSpeechRecognition(event)">
-                        <i class="fas fa-microphone"></i>
-                    </button>
-                </div>
+          <!-- User Issue -->
+          <div class="flex items-start max-w-3xl ml-auto">
+            <div class="mr-3 bg-primary-100 rounded-lg p-4">
+              <p class="text-gray-800">
+                I want to improve my French speaking skills.
+              </p>
             </div>
-            <div class="overlay" id="overlay" onclick="stopListening()">
-                <h1>Listening...</h1>
-                <p>Speak now to practice your language skills.</p>
-                <p class="text-sm mt-4 text-gray-300">(Click anywhere to stop)</p>
+            <div class="flex-shrink-0">
+              <div
+                class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center"
+              >
+                <i class="fas fa-user text-gray-600"></i>
+              </div>
             </div>
-            <div class="voice-indicator" id="voiceIndicator">
-                <div class="voice-circle">
-                    <div class="voice-circle-outer"></div>
-                    <div class="voice-circle-inner">
-                        <div class="voice-waves">
-                            <div class="voice-wave"></div>
-                            <div class="voice-wave"></div>
-                            <div class="voice-wave"></div>
-                            <div class="voice-wave"></div>
-                            <div class="voice-wave"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="voice-status">Listening...</div>
+          </div>
+
+          <!-- Bot Response 1 -->
+          <div class="flex items-start max-w-3xl">
+            <div class="flex-shrink-0">
+              <div
+                class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center"
+              >
+                <i class="fas fa-language text-primary-600"></i>
+              </div>
             </div>
+            <div class="ml-3 space-y-4">
+              <div class="bg-gray-100 rounded-lg p-4">
+                <p class="text-gray-800">
+                  That's great! To help you improve your French speaking skills,
+                  could you please provide:
+                </p>
+                <ul class="list-disc ml-4 mt-2 text-gray-600">
+                  <li>
+                    Your current level of French (beginner, intermediate,
+                    advanced)
+                  </li>
+                  <li>
+                    Specific areas you want to focus on (vocabulary, grammar,
+                    conversation)
+                  </li>
+                  <li>Any particular topics or themes you're interested in?</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- User Response -->
+          <div class="flex items-start max-w-3xl ml-auto">
+            <div class="mr-3 bg-primary-100 rounded-lg p-4">
+              <p class="text-gray-800">
+                I'm at an intermediate level. I want to focus on conversation
+                and vocabulary related to travel.
+              </p>
+            </div>
+            <div class="flex-shrink-0">
+              <div
+                class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center"
+              >
+                <i class="fas fa-user text-gray-600"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bot Final Response -->
+          <div class="flex items-start max-w-3xl">
+            <div class="flex-shrink-0">
+              <div
+                class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center"
+              >
+                <i class="fas fa-language text-primary-600"></i>
+              </div>
+            </div>
+            <div class="ml-3 bg-gray-100 rounded-lg p-4">
+              <p class="text-gray-800">
+                Thank you for sharing that information! Let's start with some
+                travel-related vocabulary and practice a conversation. Would you
+                like to begin with some common phrases or vocabulary words?
+              </p>
+            </div>
+          </div>
         </div>
 
-        <!-- Suggestions Panel -->
-        <div id="suggestionsPanel" class="hidden lg:block lg:w-96 border-l border-gray-200 bg-white overflow-y-auto">
-            <div class="p-4">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-lg font-semibold text-gray-800">Suggestions for Language Learning</h2>
-                    <div class="flex space-x-2">
-                        <button class="lg:hidden text-gray-400 hover:text-primary-600" onclick="toggleSuggestions()">
-                            <i class="fas fa-times"></i>
-                        </button>
-                        <button class="text-gray-400 hover:text-primary-600">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="text-gray-400 hover:text-primary-600">
-                            <i class="fas fa-download"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Suggestions Preview -->
-                <div class="bg-gray-50 rounded-lg p-4 space-y-4">
-                    <div class="space-y-2">
-                        <label class="block text-sm font-medium text-gray-700">Suggested Activities</label>
-                        <ul class="list-disc ml-4 mt-2 text-gray-600">
-                            <li>Practice speaking with a language partner.</li>
-                            <li>Watch French movies or shows with subtitles.</li>
-                            <li>Use language learning apps for vocabulary building.</li>
-                            <li>Read French books or articles to improve comprehension.</li>
-                        </ul>
-                    </div>
-                    <div class="space-y-2">
-                        <label class="block text-sm font-medium text-gray-700">Resources</label>
-                        <p class="text-gray-800">Here are some resources you can use:</p>
-                        <ul class="list-disc ml-4 mt-2 text-gray-600">
-                            <li><a href="https://www.duolingo.com" class="text-blue-500">Duolingo</a> - A fun app for learning languages.</li>
-                            <li><a href="https://www.memrise.com" class="text-blue-500">Memrise</a> - Great for vocabulary and phrases.</li>
-                            <li><a href="https://www.tandem.net" class="text-blue-500">Tandem</a> - Connect with native speakers for practice.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+        <!-- Chat Input -->
+        <div class="border-t border-gray-200 p-4 bg-white">
+          <div class="max-w-3xl mx-auto flex items-center space-x-4">
+            <button class="text-gray-400 hover:text-primary-600">
+              <i class="fas fa-paperclip text-xl"></i>
+            </button>
+            <input
+              type="text"
+              placeholder="Type your message..."
+              class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary-500"
+            />
+            <button
+              class="bg-primary-600 hover:bg-primary-700 text-white rounded-lg px-4 py-2 transition duration-300"
+            >
+              <i class="fas fa-paper-plane"></i>
+            </button>
+            <button
+              class="bg-primary-600 hover:bg-primary-700 text-white rounded-lg px-4 py-2 transition duration-300"
+              id="micButton"
+              onclick="toggleSpeechRecognition(event)"
+            >
+              <i class="fas fa-microphone"></i>
+            </button>
+          </div>
         </div>
+        <div class="overlay" id="overlay" onclick="stopListening()">
+          <h1>Listening...</h1>
+          <p>Speak now to practice your language skills.</p>
+          <p class="text-sm mt-4 text-gray-300">(Click anywhere to stop)</p>
+        </div>
+        <div class="voice-indicator" id="voiceIndicator">
+          <div class="voice-circle">
+            <div class="voice-circle-outer"></div>
+            <div class="voice-circle-inner">
+              <div class="voice-waves">
+                <div class="voice-wave"></div>
+                <div class="voice-wave"></div>
+                <div class="voice-wave"></div>
+                <div class="voice-wave"></div>
+                <div class="voice-wave"></div>
+              </div>
+            </div>
+          </div>
+          <div class="voice-status">Listening...</div>
+        </div>
+      </div>
 
-        <!-- Add this after the chat section div -->
-        <div id="avatarView" class="avatar-view hidden">
-            <div class="avatar-main">
-                <div class="avatar-placeholder">
-                    <i class="fas fa-user-circle"></i>
-                    <p>Avatar Coming Soon</p>
-                </div>
-                <div class="avatar-controls">
-                    <button class="control-button" id="startAvatarButton">
-                        <i class="fas fa-microphone"></i>
-                        Start Speaking
-                    </button>
-                </div>
+      <!-- Suggestions Panel -->
+      <div
+        id="suggestionsPanel"
+        class="hidden lg:block lg:w-96 border-l border-gray-200 bg-white overflow-y-auto"
+      >
+        <div class="p-4">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-gray-800">
+              Suggestions for Language Learning
+            </h2>
+            <div class="flex space-x-2">
+              <button
+                class="lg:hidden text-gray-400 hover:text-primary-600"
+                onclick="toggleSuggestions()"
+              >
+                <i class="fas fa-times"></i>
+              </button>
+              <button class="text-gray-400 hover:text-primary-600">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="text-gray-400 hover:text-primary-600">
+                <i class="fas fa-download"></i>
+              </button>
             </div>
+          </div>
+
+          <!-- Suggestions Preview -->
+          <div class="bg-gray-50 rounded-lg p-4 space-y-4">
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700"
+                >Suggested Activities</label
+              >
+              <ul class="list-disc ml-4 mt-2 text-gray-600">
+                <li>Practice speaking with a language partner.</li>
+                <li>Watch French movies or shows with subtitles.</li>
+                <li>Use language learning apps for vocabulary building.</li>
+                <li>Read French books or articles to improve comprehension.</li>
+              </ul>
+            </div>
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700"
+                >Resources</label
+              >
+              <p class="text-gray-800">Here are some resources you can use:</p>
+              <ul class="list-disc ml-4 mt-2 text-gray-600">
+                <li>
+                  <a href="https://www.duolingo.com" class="text-blue-500"
+                    >Duolingo</a
+                  >
+                  - A fun app for learning languages.
+                </li>
+                <li>
+                  <a href="https://www.memrise.com" class="text-blue-500"
+                    >Memrise</a
+                  >
+                  - Great for vocabulary and phrases.
+                </li>
+                <li>
+                  <a href="https://www.tandem.net" class="text-blue-500"
+                    >Tandem</a
+                  >
+                  - Connect with native speakers for practice.
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <!-- Add this after the chat section div -->
+      <div id="avatarView" class="avatar-view hidden">
+        <div class="avatar-main">
+          <div class="avatar-placeholder">
+            <i class="fas fa-user-circle"></i>
+            <p>Avatar Coming Soon</p>
+          </div>
+          <div class="avatar-controls">
+            <button class="control-button" id="startAvatarButton">
+              <i class="fas fa-microphone"></i>
+              Start Speaking
+            </button>
+          </div>
+        </div>
+      </div>
     </main>
 
     <script src="app.js"></script>
-</body>
+    <script src="realtime-speech.js"></script>
+  </body>
 </html>
