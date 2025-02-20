@@ -311,7 +311,13 @@
       </div>
     </main>
 
-    <script src="app.js"></script>
-    <script src="realtime-speech.js"></script>
+    <script src="chat-integration.js"></script>
+    <script>
+      // Initialize chat when the page loads
+      document.addEventListener('DOMContentLoaded', () => {
+        const chatMessages = document.querySelector('.chat-messages');
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      });
+    </script>
   </body>
 </html>
