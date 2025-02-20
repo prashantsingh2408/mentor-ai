@@ -6,6 +6,7 @@
     <title>Mentor Mind - AI Language Avatar Agent</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script>
         const CONFIG = {
             DEFAULT_THEME: 'light'
@@ -235,6 +236,7 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="api/help-chat.css">
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
     <!-- Add a fixed header with proper z-index -->
@@ -544,8 +546,165 @@
         <i class="fas fa-arrow-up"></i>
     </button>
 
-    <nav>
-        <a href="vision.html">Our Vision</a>
-    </nav>
+    <!-- Help Board -->
+    <div class="help-board">
+        <div class="help-icon">
+            <i class="fas fa-question-circle"></i>
+        </div>
+        <div class="help-content">
+            <h3>Choose Your Learning Mentor</h3>
+            <div class="mentor-options">
+                <div class="mentor-card" onclick="selectMentor('academic')">
+                    <i class="fas fa-graduation-cap"></i>
+                    <h4>Academic Mentor</h4>
+                    <p>Perfect for structured learning and academic subjects</p>
+                </div>
+                <div class="mentor-card" onclick="selectMentor('technical')">
+                    <i class="fas fa-code"></i>
+                    <h4>Technical Mentor</h4>
+                    <p>Ideal for programming and technical skills</p>
+                </div>
+                <div class="mentor-card" onclick="selectMentor('creative')">
+                    <i class="fas fa-palette"></i>
+                    <h4>Creative Mentor</h4>
+                    <p>Best for arts and creative projects</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import ChatAPI from './api/help-chat.js';
+        
+        const chatAPI = new ChatAPI();
+
+        // Add click handler for help icon
+        document.querySelector('.help-icon').addEventListener('click', (e) => {
+            e.stopPropagation();
+            const helpContent = document.querySelector('.help-content');
+            helpContent.classList.toggle('show');
+        });
+
+        // Add click handler for document to close help content
+        document.addEventListener('click', (e) => {
+            const helpContent = document.querySelector('.help-content');
+            const helpBoard = document.querySelector('.help-board');
+            
+            if (!helpBoard.contains(e.target)) {
+                helpContent.classList.remove('show');
+            }
+        });
+
+        function selectMentor(mentorType) {
+            const mentorPrompts = {
+                academic: "You are now an academic mentor focused on structured learning and academic subjects. Help the student with their academic questions.",
+                technical: "You are now a technical mentor specializing in programming and technical skills. Help the student with their technical questions.",
+                creative: "You are now a creative mentor focused on arts and creative projects. Help the student explore their creative potential."
+            };
+
+            // Set the system prompt
+            chatAPI.setSystemPrompt(mentorPrompts[mentorType]);
+            
+            // Hide help content when mentor is selected
+            document.querySelector('.help-content').classList.remove('show');
+            initializeChat();
+        }
+
+        function initializeChat() {
+            // Create chat interface if it doesn't exist
+            if (!document.getElementById('chat-interface')) {
+                const chatInterface = document.createElement('div');
+                chatInterface.id = 'chat-interface';
+                chatInterface.innerHTML = `
+                    <div class="chat-container">
+                        <div class="chat-header">
+                            <span>Chat with Mentor</span>
+                            <span class="close-chat" onclick="closeChat()">×</span>
+                        </div>
+                        <div id="chat-messages" class="chat-messages"></div>
+                        <div class="chat-input">
+                            <input type="text" id="user-input" placeholder="Type your message...">
+                            <button onclick="sendMessage()">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(chatInterface);
+
+                // Add event listener for Enter key
+                document.getElementById('user-input').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        sendMessage();
+                    }
+                });
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('user-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Clear input
+            input.value = '';
+
+            // Add user message to chat
+            addMessageToChat(message, true);
+
+            try {
+                // Get AI response
+                const response = await chatAPI.getAIResponse(message);
+                addMessageToChat(response, false);
+            } catch (error) {
+                console.error('Error:', error);
+                addMessageToChat('Sorry, there was an error processing your message.', false);
+            }
+        }
+
+        function addMessageToChat(text, isUser) {
+            const chatMessages = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flex items-start max-w-3xl ${isUser ? 'ml-auto' : ''}`;
+            
+            const messageHTML = `
+                ${isUser ? `
+                    <div class="mr-3 bg-primary-100 rounded-lg p-4">
+                        <p class="text-gray-800">${text}</p>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                            <i class="fas fa-user text-gray-600"></i>
+                        </div>
+                    </div>
+                ` : `
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
+                            <i class="fas fa-language text-primary-600"></i>
+                        </div>
+                    </div>
+                    <div class="ml-3 bg-gray-100 rounded-lg p-4">
+                        <p class="text-gray-800">${text}</p>
+                    </div>
+                `}
+            `;
+            
+            messageDiv.innerHTML = messageHTML;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Add close chat function
+        window.closeChat = function() {
+            const chatInterface = document.getElementById('chat-interface');
+            if (chatInterface) {
+                chatInterface.remove();
+            }
+        };
+
+        // Make functions available globally
+        window.selectMentor = selectMentor;
+        window.sendMessage = sendMessage;
+    </script>
 </body>
 </html>

@@ -1,0 +1,157 @@
+.help-board {
+    position: fixed;
+    right: 20px;
+    top: 100px;
+    z-index: 1000;
+}
+
+.help-icon {
+    background: #007bff;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.help-icon i {
+    color: white;
+    font-size: 24px;
+}
+
+.help-content {
+    position: absolute;
+    top: 70px;
+    right: 0;
+    width: 300px;
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    display: none;
+}
+
+/* Add class for showing content */
+.help-content.show {
+    display: block;
+}
+
+.mentor-options {
+    display: grid;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.mentor-card {
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mentor-card:hover {
+    background: #f8f9fa;
+    transform: translateY(-2px);
+}
+
+.mentor-card i {
+    color: #007bff;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.mentor-card h4 {
+    margin: 10px 0;
+    color: #333;
+}
+
+.mentor-card p {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+}
+
+/* Update chat container positioning */
+.chat-container {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 350px;
+    height: 400px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    z-index: 999;
+    margin-bottom: 100px; /* Increased margin to avoid footer overlap */
+}
+
+/* Ensure chat doesn't overlap with footer on mobile */
+@media (max-width: 768px) {
+    .chat-container {
+        margin-bottom: 120px;
+        width: 90%;
+        right: 5%;
+        height: 350px;
+    }
+}
+
+/* Add styles for chat header */
+.chat-header {
+    padding: 10px 15px;
+    background: #007bff;
+    color: white;
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-header .close-chat {
+    cursor: pointer;
+    padding: 5px;
+}
+
+.chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 15px;
+    background: #f8f9fa;
+}
+
+.chat-input {
+    display: flex;
+    padding: 10px;
+    background: white;
+    border-top: 1px solid #eee;
+    border-radius: 0 0 10px 10px;
+}
+
+.chat-input input {
+    flex-grow: 1;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    margin-right: 8px;
+}
+
+.chat-input button {
+    padding: 8px 16px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chat-input button:hover {
+    background: #0056b3;
+}
