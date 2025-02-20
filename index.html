@@ -1,323 +1,527 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Language Mentor AI Agent</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-      rel="stylesheet"
-    />
-    <link href="styles.css" rel="stylesheet" />
-    <script src="tailwind.config.js"></script>
-  </head>
-  <body class="h-screen flex flex-col bg-gray-50">
-    <!-- Header section -->
-    <header class="bg-white shadow-md flex-none">
-      <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div
-          class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0"
-        >
-          <div class="flex items-center">
-            <i
-              class="fas fa-language text-primary-600 text-2xl sm:text-4xl mr-2"
-            ></i>
-            <span class="text-lg sm:text-2xl font-bold text-gray-800"
-              >Language Mentor AI Agent</span
-            >
-          </div>
-          <div class="flex items-center space-x-4">
-            <button
-              class="lg:hidden inline-flex items-center px-4 py-2 text-gray-600 hover:text-primary-600 transition duration-300"
-              onclick="toggleSuggestions()"
-            >
-              <i class="fas fa-lightbulb mr-2"></i>
-              <span>View Suggestions</span>
-            </button>
-            <button
-              class="inline-flex items-center px-4 py-2 text-gray-600 hover:text-primary-600 transition duration-300"
-            >
-              <i class="fas fa-history mr-2"></i>
-              <span class="hidden sm:inline">History</span>
-            </button>
-            <button
-              class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-lg transition duration-300"
-            >
-              <i class="fas fa-plus mr-2"></i>
-              <span class="hidden sm:inline">New Session</span>
-            </button>
-          </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentor Mind - AI Language Avatar Agent</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        const CONFIG = {
+            DEFAULT_THEME: 'light'
+        };
+
+        const applyTheme = (theme) => {
+            const root = document.documentElement;
+            const themeButtons = document.querySelectorAll('.theme-btn');
+            
+            // Remove active state from all buttons
+            themeButtons.forEach(btn => btn.classList.remove('ring-2', 'ring-offset-2'));
+            
+            // Add active state to selected theme button
+            const activeButton = document.querySelector(`[data-theme="${theme}"]`);
+            if (activeButton) {
+                activeButton.classList.add('ring-2', 'ring-offset-2');
+            }
+
+            // Remove any existing theme classes
+            root.classList.remove('theme-dark', 'theme-green', 'theme-blue');
+            
+            // Add the new theme class
+            if (theme !== 'light') {
+                root.classList.add(`theme-${theme}`);
+            }
+            
+            localStorage.setItem('selected-theme', theme);
+        };
+
+        // Initialize theme
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('selected-theme') || CONFIG.DEFAULT_THEME;
+            applyTheme(savedTheme);
+        });
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    // Close mobile menu if open
+                    document.getElementById('mobileMenu').classList.add('hidden');
+                    
+                    // Calculate header height
+                    const headerHeight = document.querySelector('header').offsetHeight;
+                    
+                    // Scroll to element with offset for fixed header
+                    const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+                    
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #1f2937;
+            --accent-color: #22c55e;
+            --accent-dark: #16a34a;
+            --accent-light: #86efac;
+            --border-color: #e5e7eb;
+        }
+
+        .theme-dark {
+            --bg-color: #1f2937;
+            --text-color: #ffffff;
+            --accent-color: #4b5563;
+            --accent-dark: #374151;
+            --accent-light: #9ca3af;
+            --border-color: #374151;
+            --soft-border: rgba(255, 255, 255, 0.1);
+        }
+
+        .theme-dark .border,
+        .theme-dark .border-t,
+        .theme-dark .border-b,
+        .theme-dark .border-l,
+        .theme-dark .border-r {
+            border-color: var(--soft-border);
+        }
+
+        .theme-dark .shadow-sm {
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .theme-dark .shadow-md {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        .theme-green {
+            --bg-color: #ffffff;
+            --text-color: #1f2937;
+            --accent-color: #22c55e;
+            --accent-dark: #16a34a;
+            --accent-light: #86efac;
+            --border-color: #e5e7eb;
+        }
+
+        .theme-blue {
+            --bg-color: #ffffff;
+            --text-color: #1f2937;
+            --accent-color: #2563eb;
+            --accent-dark: #1d4ed8;
+            --accent-light: #93c5fd;
+            --border-color: #e5e7eb;
+        }
+
+        /* Add smooth transitions */
+        * {
+            transition-property: color, background-color, border-color;
+            transition-duration: 200ms;
+        }
+
+        /* Rest of your styles */
+        .feature-card {
+            position: relative;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background-color: var(--accent-color);
+            border-radius: 2px;
+        }
+
+        .carousel-container {
+            scroll-behavior: smooth;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        .carousel-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .main-content {
+                margin-left: 16rem;
+            }
+        }
+
+        /* Theme-specific styles */
+        :root {
+            --primary-color: #22c55e;
+        }
+
+        [data-theme="blue"] {
+            --primary-color: #2563eb;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #3b82f6;
+        }
+
+        .theme-toggle-btn {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 50;
+        }
+
+        :root {
+            --primary-bg: #22c55e;
+            --primary-text: #166534;
+            --bg-color: #ffffff;
+            --text-color: #1f2937;
+        }
+
+        [data-theme="blue"] {
+            --primary-bg: #2563eb;
+            --primary-text: #1e40af;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1f2937;
+            --text-color: #ffffff;
+            --primary-bg: #3b82f6;
+            --primary-text: #60a5fa;
+        }
+
+        /* Add visual feedback for active theme */
+        .theme-btn.active {
+            transform: scale(1.1);
+            box-shadow: 0 0 0 2px white, 0 0 0 4px var(--primary-bg);
+        }
+
+        /* Add these classes */
+        .bg-theme {
+            background-color: var(--bg-color);
+        }
+
+        .text-theme {
+            color: var(--text-color);
+        }
+
+        /* Add these mobile-specific styles */
+        @media (max-width: 768px) {
+            .feature-card {
+                padding-left: 1.5rem;
+            }
+            
+            .feature-card::before {
+                width: 3px;
+            }
+            
+            /* Improve touch targets on mobile */
+            button, 
+            a {
+                min-height: 44px;
+                padding: 0.75rem 1rem;
+            }
+            
+            /* Improve text readability on mobile */
+            p {
+                line-height: 1.6;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+    <!-- Add a fixed header with proper z-index -->
+    <header class="fixed top-0 left-0 right-0 bg-[var(--bg-color)] border-b border-[var(--border-color)] shadow-sm z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <i class="fas fa-language text-primary-600 text-2xl sm:text-4xl mr-2"></i>
+                    <span class="text-lg sm:text-2xl font-bold text-gray-800">Language Mentor AI</span>
+                </div>
+
+                <!-- Mobile menu button -->
+                <button class="md:hidden p-2 rounded-md text-[var(--text-color)]" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+
+                <!-- Navigation - Desktop -->
+                <nav class="hidden md:flex items-center space-x-6">
+                    <a href="#features" class="text-[var(--text-color)] hover:text-[var(--accent-color)] transition-colors">Features</a>
+                    <a href="https://github.com/prashantsingh2408/mentor-ai" target="_blank" class="text-[var(--text-color)] hover:text-[var(--accent-color)] transition-colors">
+                        <i class="fab fa-github mr-1"></i> GitHub
+                    </a>
+                    <a href="agent.html" class="px-4 py-2 bg-[var(--accent-color)] hover:bg-[var(--accent-dark)] text-white font-semibold rounded-lg transition duration-300">
+                        Start Learning
+                    </a>
+                    
+                    <!-- Theme toggles -->
+                    <div class="flex items-center space-x-3">
+                        <button 
+                            class="theme-btn w-10 h-10 rounded-full transition-all duration-200 hover:scale-110 flex items-center justify-center bg-[var(--bg-color)] border-2 shadow-md"
+                            style="border-color: var(--text-color)"
+                            data-theme="dark"
+                            onclick="applyTheme('dark')"
+                            title="Dark Theme">
+                            <i class="fas fa-moon text-xl text-[var(--text-color)]"></i>
+                        </button>
+                        <button 
+                            class="theme-btn w-10 h-10 rounded-full transition-all duration-200 hover:scale-110 flex items-center justify-center bg-[var(--bg-color)] border-2 shadow-md"
+                            style="border-color: var(--text-color)"
+                            data-theme="green"
+                            onclick="applyTheme('green')"
+                            title="Green Theme">
+                            <i class="fas fa-leaf text-xl text-[var(--text-color)]"></i>
+                        </button>
+                        <button 
+                            class="theme-btn w-10 h-10 rounded-full transition-all duration-200 hover:scale-110 flex items-center justify-center bg-[var(--bg-color)] border-2 shadow-md"
+                            style="border-color: var(--text-color)"
+                            data-theme="blue"
+                            onclick="applyTheme('blue')"
+                            title="Blue Theme">
+                            <i class="fas fa-water text-xl text-[var(--text-color)]"></i>
+                        </button>
+                    </div>
+                </nav>
+            </div>
         </div>
-      </nav>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-[var(--bg-color)] border-t border-[var(--border-color)]">
+            <div class="px-4 py-3 space-y-4">
+                <a href="#features" class="block text-[var(--text-color)] hover:text-[var(--accent-color)] py-2">Features</a>
+                <a href="#team" class="block text-[var(--text-color)] hover:text-[var(--accent-color)] py-2">Join Team</a>
+                <a href="https://github.com/yourusername/devai" target="_blank" class="block text-[var(--text-color)] hover:text-[var(--accent-color)] py-2">
+                    <i class="fab fa-github mr-1"></i> GitHub
+                </a>
+                <a href="agent.html" class="w-full text-left px-4 py-3 bg-[var(--accent-color)] hover:bg-[var(--accent-dark)] text-white font-semibold rounded-lg transition duration-300">
+                    Start Learning
+                </a>
+                
+                <!-- Mobile Theme Toggles -->
+                <div class="flex items-center gap-3 py-2">
+                    <button 
+                        class="theme-btn w-8 h-8 rounded-full transition-all duration-200 hover:scale-110 flex items-center justify-center bg-[var(--bg-color)] border-2"
+                        style="border-color: var(--text-color)"
+                        data-theme="dark"
+                        onclick="applyTheme('dark')"
+                        title="Dark Theme">
+                        <i class="fas fa-moon text-[var(--text-color)]"></i>
+                    </button>
+                    <button 
+                        class="theme-btn w-8 h-8 rounded-full transition-all duration-200 hover:scale-110 flex items-center justify-center bg-[var(--bg-color)] border-2"
+                        style="border-color: var(--text-color)"
+                        data-theme="green"
+                        onclick="applyTheme('green')"
+                        title="Green Theme">
+                        <i class="fas fa-leaf text-[var(--text-color)]"></i>
+                    </button>
+                    <button 
+                        class="theme-btn w-8 h-8 rounded-full transition-all duration-200 hover:scale-110 flex items-center justify-center bg-[var(--bg-color)] border-2"
+                        style="border-color: var(--text-color)"
+                        data-theme="blue"
+                        onclick="applyTheme('blue')"
+                        title="Blue Theme">
+                        <i class="fas fa-water text-[var(--text-color)]"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
     </header>
 
-    <!-- Add this after the header section -->
-    <div class="bg-gray-100 border-b border-gray-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-        <div class="flex justify-center space-x-4">
-          <button class="mode-button active" data-mode="chat">
-            <i class="fas fa-comments mr-2"></i>
-            Chat Mode
-          </button>
-          <button class="mode-button" data-mode="voice">
-            <i class="fas fa-microphone mr-2"></i>
-            Voice Mode
-          </button>
-          <button class="mode-button" data-mode="avatar">
-            <i class="fas fa-user-circle mr-2"></i>
-            Avatar Mode
-          </button>
+    <!-- Add padding-top to the hero section to account for fixed header -->
+    <section class="bg-theme pt-24 pb-16 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto text-center">
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-theme mb-6 leading-tight">
+                Mentor Mind: AI-Powered Language Avatar Agent
+            </h1>
+            <p class="text-lg sm:text-xl text-theme opacity-90 mb-8">
+                Advanced language learning with real-time pronunciation feedback, voice interaction, and personalized avatar tutoring
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="agent.html" class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 bg-[var(--accent-color)] hover:bg-[var(--accent-dark)] text-white font-semibold rounded-lg transition duration-300">
+                    <i class="fas fa-play mr-2"></i>
+                    Start Learning
+                </a>
+                <a href="https://github.com/prashantsingh2408/mentor-ai" 
+                   class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 bg-gray-100 hover:bg-gray-200 text-[var(--accent-color)] font-semibold rounded-lg transition duration-300">
+                    <i class="fab fa-github mr-2"></i>
+                    View on GitHub
+                </a>
+            </div>
         </div>
-      </div>
-    </div>
+    </section>
 
-    <!-- Main Content -->
-    <main class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
-      <!-- Chat Section -->
-      <div class="flex-1 flex flex-col bg-white mobile-chat-container">
-        <!-- Chat Messages -->
-        <div class="flex-1 overflow-y-auto p-4 space-y-4 chat-messages">
-          <!-- Initial Bot Message -->
-          <div class="flex items-start max-w-3xl">
-            <div class="flex-shrink-0">
-              <div
-                class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center"
-              >
-                <i class="fas fa-language text-primary-600"></i>
-              </div>
+    <!-- Features Section -->
+    <section id="features" class="py-12 sm:py-16 bg-[var(--bg-color)] px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <span class="text-[var(--accent-color)] font-semibold">Core Features</span>
+                <h2 class="text-3xl sm:text-4xl font-bold text-[var(--text-color)] mt-2">Three Powerful Modes</h2>
             </div>
-            <div class="ml-3 bg-gray-100 rounded-lg p-4">
-              <p class="text-gray-800">
-                Hello! I'm your AI language Mentor. I can help you learn and
-                practice languages. Just tell me what you want to learn, and
-                I'll assist you with exercises and explanations.
-              </p>
-            </div>
-          </div>
 
-          <!-- User Issue -->
-          <div class="flex items-start max-w-3xl ml-auto">
-            <div class="mr-3 bg-primary-100 rounded-lg p-4">
-              <p class="text-gray-800">
-                I want to improve my French speaking skills.
-              </p>
-            </div>
-            <div class="flex-shrink-0">
-              <div
-                class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center"
-              >
-                <i class="fas fa-user text-gray-600"></i>
-              </div>
-            </div>
-          </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                <!-- Chat Mode -->
+                <div class="feature-card bg-[var(--bg-color)] p-6 rounded-lg shadow-md border border-[var(--border-color)]">
+                    <h3 class="text-xl font-semibold text-[var(--text-color)] mb-3">
+                        <i class="fas fa-comments mr-2 text-[var(--accent-color)]"></i>
+                        Chat Mode
+                    </h3>
+                    <p class="text-[var(--text-color)] opacity-80">
+                        Natural text-based conversations with instant feedback and corrections
+                    </p>
+                </div>
 
-          <!-- Bot Response 1 -->
-          <div class="flex items-start max-w-3xl">
-            <div class="flex-shrink-0">
-              <div
-                class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center"
-              >
-                <i class="fas fa-language text-primary-600"></i>
-              </div>
-            </div>
-            <div class="ml-3 space-y-4">
-              <div class="bg-gray-100 rounded-lg p-4">
-                <p class="text-gray-800">
-                  That's great! To help you improve your French speaking skills,
-                  could you please provide:
-                </p>
-                <ul class="list-disc ml-4 mt-2 text-gray-600">
-                  <li>
-                    Your current level of French (beginner, intermediate,
-                    advanced)
-                  </li>
-                  <li>
-                    Specific areas you want to focus on (vocabulary, grammar,
-                    conversation)
-                  </li>
-                  <li>Any particular topics or themes you're interested in?</li>
-                </ul>
-              </div>
-            </div>
-          </div>
+                <!-- Voice Mode -->
+                <div class="feature-card bg-[var(--bg-color)] p-6 rounded-lg shadow-md border border-[var(--border-color)]">
+                    <h3 class="text-xl font-semibold text-[var(--text-color)] mb-3">
+                        <i class="fas fa-microphone mr-2 text-[var(--accent-color)]"></i>
+                        Voice Mode
+                    </h3>
+                    <p class="text-[var(--text-color)] opacity-80">
+                        Real-time pronunciation feedback using OpenAI's advanced speech recognition
+                    </p>
+                </div>
 
-          <!-- User Response -->
-          <div class="flex items-start max-w-3xl ml-auto">
-            <div class="mr-3 bg-primary-100 rounded-lg p-4">
-              <p class="text-gray-800">
-                I'm at an intermediate level. I want to focus on conversation
-                and vocabulary related to travel.
-              </p>
+                <!-- Avatar Mode -->
+                <div class="feature-card bg-[var(--bg-color)] p-6 rounded-lg shadow-md border border-[var(--border-color)]">
+                    <h3 class="text-xl font-semibold text-[var(--text-color)] mb-3">
+                        <i class="fas fa-user-circle mr-2 text-[var(--accent-color)]"></i>
+                        Avatar Mode
+                    </h3>
+                    <p class="text-[var(--text-color)] opacity-80">
+                        Interactive learning with a visual AI avatar providing personalized guidance
+                    </p>
+                </div>
             </div>
-            <div class="flex-shrink-0">
-              <div
-                class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center"
-              >
-                <i class="fas fa-user text-gray-600"></i>
-              </div>
-            </div>
-          </div>
 
-          <!-- Bot Final Response -->
-          <div class="flex items-start max-w-3xl">
-            <div class="flex-shrink-0">
-              <div
-                class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center"
-              >
-                <i class="fas fa-language text-primary-600"></i>
-              </div>
+            <!-- Key Capabilities -->
+            <div class="mt-16">
+                <div class="text-center mb-12">
+                    <h2 class="text-2xl font-bold text-[var(--text-color)]">Key Capabilities</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Real-Time Feedback -->
+                    <div class="bg-[var(--bg-color)] p-6 rounded-lg shadow-md border border-[var(--border-color)]">
+                        <h3 class="text-xl font-semibold text-[var(--text-color)] mb-3">
+                            <i class="fas fa-check-circle mr-2 text-[var(--accent-color)]"></i>
+                            Real-Time Pronunciation Feedback
+                        </h3>
+                        <p class="text-[var(--text-color)] opacity-80">
+                            Instant correction and examples for mispronounced words with audio demonstrations
+                        </p>
+                    </div>
+
+                    <!-- Context Awareness -->
+                    <div class="bg-[var(--bg-color)] p-6 rounded-lg shadow-md border border-[var(--border-color)]">
+                        <h3 class="text-xl font-semibold text-[var(--text-color)] mb-3">
+                            <i class="fas fa-brain mr-2 text-[var(--accent-color)]"></i>
+                            Context Awareness
+                        </h3>
+                        <p class="text-[var(--text-color)] opacity-80">
+                            Adapts to your learning style and remembers previous interactions for personalized learning
+                        </p>
+                    </div>
+                </div>
             </div>
-            <div class="ml-3 bg-gray-100 rounded-lg p-4">
-              <p class="text-gray-800">
-                Thank you for sharing that information! Let's start with some
-                travel-related vocabulary and practice a conversation. Would you
-                like to begin with some common phrases or vocabulary words?
-              </p>
-            </div>
-          </div>
         </div>
+    </section>
 
-        <!-- Chat Input -->
-        <div class="border-t border-gray-200 p-4 bg-white">
-          <div class="max-w-3xl mx-auto flex items-center space-x-4">
-            <button class="text-gray-400 hover:text-primary-600">
-              <i class="fas fa-paperclip text-xl"></i>
-            </button>
-            <input
-              type="text"
-              placeholder="Type your message..."
-              class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary-500"
-            />
-            <button
-              class="bg-primary-600 hover:bg-primary-700 text-white rounded-lg px-4 py-2 transition duration-300"
-            >
-              <i class="fas fa-paper-plane"></i>
-            </button>
-            <button
-              class="bg-primary-600 hover:bg-primary-700 text-white rounded-lg px-4 py-2 transition duration-300"
-              id="micButton"
-              onclick="toggleSpeechRecognition(event)"
-            >
-              <i class="fas fa-microphone"></i>
-            </button>
-          </div>
-        </div>
-        <div class="overlay" id="overlay" onclick="stopListening()">
-          <h1>Listening...</h1>
-          <p>Speak now to practice your language skills.</p>
-          <p class="text-sm mt-4 text-gray-300">(Click anywhere to stop)</p>
-        </div>
-        <div class="voice-indicator" id="voiceIndicator">
-          <div class="voice-circle">
-            <div class="voice-circle-outer"></div>
-            <div class="voice-circle-inner">
-              <div class="voice-waves">
-                <div class="voice-wave"></div>
-                <div class="voice-wave"></div>
-                <div class="voice-wave"></div>
-                <div class="voice-wave"></div>
-                <div class="voice-wave"></div>
-              </div>
-            </div>
-          </div>
-          <div class="voice-status">Listening...</div>
-        </div>
-      </div>
+    <!-- Additional sections for Pricing, Installation, etc. can be added following the same pattern -->
 
-      <!-- Suggestions Panel -->
-      <div
-        id="suggestionsPanel"
-        class="hidden lg:block lg:w-96 border-l border-gray-200 bg-white overflow-y-auto"
-      >
-        <div class="p-4">
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-semibold text-gray-800">
-              Suggestions for Language Learning
-            </h2>
-            <div class="flex space-x-2">
-              <button
-                class="lg:hidden text-gray-400 hover:text-primary-600"
-                onclick="toggleSuggestions()"
-              >
-                <i class="fas fa-times"></i>
-              </button>
-              <button class="text-gray-400 hover:text-primary-600">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="text-gray-400 hover:text-primary-600">
-                <i class="fas fa-download"></i>
-              </button>
-            </div>
-          </div>
-
-          <!-- Suggestions Preview -->
-          <div class="bg-gray-50 rounded-lg p-4 space-y-4">
-            <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700"
-                >Suggested Activities</label
-              >
-              <ul class="list-disc ml-4 mt-2 text-gray-600">
-                <li>Practice speaking with a language partner.</li>
-                <li>Watch French movies or shows with subtitles.</li>
-                <li>Use language learning apps for vocabulary building.</li>
-                <li>Read French books or articles to improve comprehension.</li>
-              </ul>
-            </div>
-            <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700"
-                >Resources</label
-              >
-              <p class="text-gray-800">Here are some resources you can use:</p>
-              <ul class="list-disc ml-4 mt-2 text-gray-600">
-                <li>
-                  <a href="https://www.duolingo.com" class="text-blue-500"
-                    >Duolingo</a
-                  >
-                  - A fun app for learning languages.
-                </li>
-                <li>
-                  <a href="https://www.memrise.com" class="text-blue-500"
-                    >Memrise</a
-                  >
-                  - Great for vocabulary and phrases.
-                </li>
-                <li>
-                  <a href="https://www.tandem.net" class="text-blue-500"
-                    >Tandem</a
-                  >
-                  - Connect with native speakers for practice.
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Add this after the chat section div -->
-      <div id="avatarView" class="avatar-view hidden">
-        <div class="avatar-main">
-          <div class="avatar-placeholder">
-            <i class="fas fa-user-circle"></i>
-            <p>Avatar Coming Soon</p>
-          </div>
-          <div class="avatar-controls">
-            <button class="control-button" id="startAvatarButton">
-              <i class="fas fa-microphone"></i>
-              Start Speaking
-            </button>
-          </div>
-        </div>
-      </div>
-    </main>
-
-    <script src="chat-integration.js"></script>
+    <!-- Add mobile menu script -->
     <script>
-      // Initialize chat when the page loads
-      document.addEventListener('DOMContentLoaded', () => {
-        const chatMessages = document.querySelector('.chat-messages');
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-      });
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('hidden');
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileMenuButton = document.querySelector('button[onclick="toggleMobileMenu()"]');
+            
+            if (!mobileMenu.contains(e.target) && !mobileMenuButton.contains(e.target)) {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('#mobileMenu a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('mobileMenu').classList.add('hidden');
+            });
+        });
+
+        // Close mobile menu on resize if screen becomes larger
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 768) { // md breakpoint
+                document.getElementById('mobileMenu').classList.add('hidden');
+            }
+        });
     </script>
-  </body>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="space-y-4">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-language text-[var(--accent-light)] text-2xl"></i>
+                        <a href="#">Mentor Mind</a>
+                    </div>
+                    <p class="text-gray-400">Empowering language learning through AI-powered conversations.</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg mb-4 text-white">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#about" class="text-gray-400 hover:text-[var(--accent-light)] transition duration-300">About</a></li>
+                        <li><a href="#new-member" class="text-gray-400 hover:text-[var(--accent-light)] transition duration-300">Join Us</a></li>
+                        <li><a href="#ideation-board" class="text-gray-400 hover:text-[var(--accent-light)] transition duration-300">Ideation</a></li>
+                        <li><a href="#hackathons" class="text-gray-400 hover:text-[var(--accent-light)] transition duration-300">Hackathons</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg mb-4 text-white">Community</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#members" class="text-gray-400 hover:text-[var(--accent-light)] transition duration-300">Members</a></li>
+                        <li><a href="#communication-channels" class="text-gray-400 hover:text-[var(--accent-light)] transition duration-300">Connect</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg mb-4 text-white">Connect With Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-[var(--accent-light)] transition duration-300">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-[var(--accent-light)] transition duration-300">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-[var(--accent-light)] transition duration-300">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 py-6 text-center text-gray-400">
+                <p>&copy; 2024 <a href="https://hackathons-circle.vercel.app/" 
+                                 target="_blank" 
+                                 class="hover:text-[var(--accent-light)] transition duration-300">Hackathon Circle</a>. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
+            class="fixed bottom-8 right-8 p-4 bg-[var(--accent-color)] text-[var(--bg-color)] rounded-full shadow-lg hover:bg-[var(--accent-dark)] transition duration-300 hidden md:block">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+</body>
 </html>
