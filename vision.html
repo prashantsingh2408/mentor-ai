@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Vision - Mentor Mind</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        const CONFIG = {
+            DEFAULT_THEME: 'light'
+        };
+
+        const applyTheme = (theme) => {
+            const root = document.documentElement;
+            const themeButtons = document.querySelectorAll('.theme-btn');
+            
+            themeButtons.forEach(btn => btn.classList.remove('ring-2', 'ring-offset-2'));
+            
+            const activeButton = document.querySelector(`[data-theme="${theme}"]`);
+            if (activeButton) {
+                activeButton.classList.add('ring-2', 'ring-offset-2');
+            }
+
+            root.classList.remove('theme-dark', 'theme-green', 'theme-blue');
+            
+            if (theme !== 'light') {
+                root.classList.add(`theme-${theme}`);
+            }
+            
+            localStorage.setItem('selected-theme', theme);
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('selected-theme') || CONFIG.DEFAULT_THEME;
+            applyTheme(savedTheme);
+        });
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color, #ffffff);
+            color: var(--text-color, #1f2937);
+        }
+        .vision-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .back-link {
+            margin-bottom: 20px;
+            display: block;
+            color: var(--accent-color, #22c55e);
+            text-decoration: none;
+        }
+        .feature-card {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        h1, h2 {
+            color: var(--accent-color, #22c55e);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .emoji {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        /* Theme-specific styles */
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #1f2937;
+            --accent-color: #22c55e;
+            --accent-dark: #16a34a;
+            --accent-light: #86efac;
+            --border-color: #e5e7eb;
+            --card-bg: #ffffff;
+            --shadow-color: rgba(0,0,0,0.1);
+        }
+
+        .theme-dark {
+            --bg-color: #1f2937;
+            --text-color: #ffffff;
+            --accent-color: #60a5fa;
+            --accent-dark: #3b82f6;
+            --accent-light: #93c5fd;
+            --border-color: #374151;
+            --card-bg: #2d3748;
+            --shadow-color: rgba(0,0,0,0.3);
+        }
+
+        .theme-blue {
+            --bg-color: #ffffff;
+            --text-color: #1f2937;
+            --accent-color: #2563eb;
+            --accent-dark: #1d4ed8;
+            --accent-light: #93c5fd;
+            --border-color: #e5e7eb;
+            --card-bg: #ffffff;
+            --shadow-color: rgba(0,0,0,0.1);
+        }
+
+        .theme-green {
+            --bg-color: #ffffff;
+            --text-color: #1f2937;
+            --accent-color: #22c55e;
+            --accent-dark: #16a34a;
+            --accent-light: #86efac;
+            --border-color: #e5e7eb;
+            --card-bg: #ffffff;
+            --shadow-color: rgba(0,0,0,0.1);
+        }
+
+        /* Theme-specific overrides */
+        .theme-dark .feature-card {
+            background: var(--card-bg);
+            box-shadow: 0 2px 4px var(--shadow-color);
+        }
+
+        .theme-dark h3 {
+            color: var(--accent-light);
+        }
+
+        .theme-dark .back-link {
+            color: var(--accent-light);
+        }
+
+        /* Theme toggle buttons */
+        .theme-toggles {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .theme-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.1);
+            background: var(--accent-color);
+            color: var(--bg-color);
+        }
+
+        /* Active theme button state */
+        .theme-btn.ring-2 {
+            transform: scale(1.1);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px var(--accent-light);
+        }
+
+        /* Ensure text is readable in all themes */
+        p, li {
+            color: var(--text-color);
+        }
+
+        h1, h2, h3 {
+            color: var(--accent-color);
+        }
+
+        /* Update button styles for better visibility */
+        .theme-btn {
+            background: var(--card-bg);
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .theme-btn:hover {
+            background: var(--accent-color);
+            color: var(--bg-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Add Theme Toggles -->
+    <div class="theme-toggles">
+        <button 
+            class="theme-btn"
+            data-theme="dark"
+            onclick="applyTheme('dark')"
+            title="Dark Theme">
+            <i class="fas fa-moon"></i>
+        </button>
+        <button 
+            class="theme-btn"
+            data-theme="green"
+            onclick="applyTheme('green')"
+            title="Green Theme">
+            <i class="fas fa-leaf"></i>
+        </button>
+        <button 
+            class="theme-btn"
+            data-theme="blue"
+            onclick="applyTheme('blue')"
+            title="Blue Theme">
+            <i class="fas fa-water"></i>
+        </button>
+    </div>
+
+    <div class="vision-container">
+        <a href="index.html" class="back-link">← Back to Home</a>
+        
+        <section class="section">
+            <h1>Our Vision</h1>
+            <p>At Mentor Mind, we envision a future where personalized AI-powered growth is accessible to everyone, transforming how people learn, develop, and achieve their professional goals.</p>
+        </section>
+
+        <section class="section">
+            <h2>🎯 Key Strengths</h2>
+            <div class="feature-card">
+                <h3>Modular Expertise Areas</h3>
+                <ul>
+                    <li>Executive Coaching with AI-powered leadership insights</li>
+                    <li>Career Transition guidance</li>
+                    <li>Interactive Language Learning</li>
+                    <li>Fitness & Nutrition planning</li>
+                    <li>Professional Mentorship</li>
+                    <li>Business Growth strategies</li>
+                    <li>Advanced Voice Interaction</li>
+                    <li>Team Collaboration tools</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>💡 Technology & Innovation</h2>
+            <div class="grid">
+                <div class="feature-card">
+                    <h3>AI-Powered Intelligence</h3>
+                    <p>Leveraging advanced AI models for personalized learning experiences and real-time feedback</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Goal-Oriented Approach</h3>
+                    <p>Structured development paths with measurable outcomes and adaptive learning paths</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Personalized Experience</h3>
+                    <p>Dynamic content adaptation based on individual progress and learning style</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>🚀 Future Developments</h2>
+            <div class="feature-card">
+                <h3>Planned Enhancements</h3>
+                <ul>
+                    <li>Advanced gamification elements</li>
+                    <li>AI-driven mentor matching system</li>
+                    <li>Deep integration with professional platforms</li>
+                    <li>Enhanced voice interaction capabilities</li>
+                    <li>Expanded learning modules and specializations</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>🎯 Our Mission</h2>
+            <div class="feature-card">
+                <p>To empower individuals and organizations with cutting-edge AI technology for continuous learning and development, making professional growth accessible, engaging, and effective.</p>
+            </div>
+        </section>
+    </div>
+</body>
+</html> 
