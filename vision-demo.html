@@ -1,1 +1,391 @@
-demo
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Our Vision - Mentor Mind</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script>
+      // Enhanced Theme System
+      const CONFIG = {
+        DEFAULT_THEME: "light",
+        THEMES: ["light", "dark", "green", "blue", "professional"],
+      };
+
+      const applyTheme = (theme) => {
+        const root = document.documentElement;
+        root.className = theme;
+        localStorage.setItem("selected-theme", theme);
+
+        // Update theme selector
+        document.querySelectorAll(".theme-option").forEach((option) => {
+          option.classList.remove("active");
+          if (option.dataset.theme === theme) option.classList.add("active");
+        });
+      };
+
+      // Scroll Animation Handler
+      const animateOnScroll = () => {
+        document.querySelectorAll(".animate").forEach((element) => {
+          const elementTop = element.getBoundingClientRect().top;
+          if (elementTop < window.innerHeight * 0.8) {
+            element.classList.add("active");
+          }
+        });
+      };
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const savedTheme =
+          localStorage.getItem("selected-theme") || CONFIG.DEFAULT_THEME;
+        applyTheme(savedTheme);
+
+        // Initialize scroll animations
+        window.addEventListener("scroll", animateOnScroll);
+        animateOnScroll();
+
+        // Initialize smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+          anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute("href")).scrollIntoView({
+              behavior: "smooth",
+            });
+          });
+        });
+      });
+    </script>
+    <style>
+      /* Base Styles */
+      :root {
+        --primary: #22c55e;
+        --secondary: #2563eb;
+        --background: #ffffff;
+        --text: #1f2937;
+        --card-bg: #ffffff;
+        --border: #e5e7eb;
+        --shadow: rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+      }
+
+      body {
+        font-family: "Inter", Arial, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        background-color: var(--background);
+        color: var(--text);
+        transition: var(--transition);
+      }
+
+      /* Theme Definitions */
+      .dark {
+        --primary: #60a5fa;
+        --secondary: #9333ea;
+        --background: #1f2937;
+        --text: #f3f4f6;
+        --card-bg: #2d3748;
+        --border: #374151;
+        --shadow: rgba(0, 0, 0, 0.3);
+      }
+
+      .green {
+        --primary: #22c55e;
+        --secondary: #16a34a;
+        --background: #f0fdf4;
+        --text: #1f2937;
+      }
+
+      .blue {
+        --primary: #2563eb;
+        --secondary: #1d4ed8;
+        --background: #eff6ff;
+      }
+
+      .professional {
+        --primary: #3b82f6;
+        --secondary: #6366f1;
+        --background: #f8fafc;
+        --text: #1e293b;
+      }
+
+      /* Navigation */
+      .navbar {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        background: var(--card-bg);
+        box-shadow: 0 2px 10px var(--shadow);
+        z-index: 1000;
+      }
+
+      .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        text-decoration: none;
+      }
+
+      /* Hero Section */
+      .hero {
+        padding: 8rem 2rem 4rem;
+        text-align: center;
+        background: linear-gradient(45deg, var(--primary), var(--secondary));
+        color: white;
+        clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+      }
+
+      .hero h1 {
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+        animation: float 3s ease-in-out infinite;
+      }
+
+      /* Animations */
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      .animate {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s, transform 0.6s;
+      }
+
+      .animate.active {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* Enhanced Feature Cards */
+      .feature-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 2rem;
+        margin: 1rem 0;
+        box-shadow: 0 4px 6px var(--shadow);
+        transition: var(--transition);
+        border: 1px solid var(--border);
+      }
+
+      .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px var(--shadow);
+      }
+
+      .feature-icon {
+        font-size: 2.5rem;
+        color: var(--primary);
+        margin-bottom: 1rem;
+      }
+
+      /* Theme Selector */
+      .theme-selector {
+        position: relative;
+        display: inline-block;
+      }
+
+      .theme-menu {
+        display: none;
+        position: absolute;
+        right: 0;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.5rem;
+        min-width: 150px;
+      }
+
+      .theme-option {
+        padding: 0.5rem;
+        cursor: pointer;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .theme-option:hover {
+        background: var(--background);
+      }
+
+      .theme-option.active {
+        background: var(--primary);
+        color: white;
+      }
+
+      /* Progress Indicator */
+      .progress-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: transparent;
+        z-index: 1001;
+      }
+
+      .progress-bar {
+        height: 100%;
+        background: var(--primary);
+        width: 0%;
+        transition: width 0.3s ease;
+      }
+
+      /* Back to Top Button */
+      .back-to-top {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: var(--primary);
+        color: white;
+        padding: 1rem;
+        border-radius: 50%;
+        cursor: pointer;
+        opacity: 0;
+        transition: var(--transition);
+        box-shadow: 0 4px 6px var(--shadow);
+      }
+
+      .back-to-top.visible {
+        opacity: 1;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .hero h1 {
+          font-size: 2.5rem;
+        }
+
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Progress Indicator -->
+    <div class="progress-container">
+      <div class="progress-bar"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="index.html" class="logo">Mentor Mind</a>
+        <div class="theme-selector">
+          <button
+            class="btn"
+            onclick="document.querySelector('.theme-menu').style.display = 'block'"
+          >
+            <i class="fas fa-palette"></i> Theme
+          </button>
+          <div class="theme-menu">
+            <div
+              class="theme-option active"
+              data-theme="light"
+              onclick="applyTheme('light')"
+            >
+              <i class="fas fa-sun"></i> Light
+            </div>
+            <div
+              class="theme-option"
+              data-theme="dark"
+              onclick="applyTheme('dark')"
+            >
+              <i class="fas fa-moon"></i> Dark
+            </div>
+            <div
+              class="theme-option"
+              data-theme="green"
+              onclick="applyTheme('green')"
+            >
+              <i class="fas fa-leaf"></i> Green
+            </div>
+            <div
+              class="theme-option"
+              data-theme="blue"
+              onclick="applyTheme('blue')"
+            >
+              <i class="fas fa-water"></i> Blue
+            </div>
+            <div
+              class="theme-option"
+              data-theme="professional"
+              onclick="applyTheme('professional')"
+            >
+              <i class="fas fa-briefcase"></i> Professional
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <h1>Shaping the Future of Learning</h1>
+      <p class="animate">Empowering growth through intelligent mentorship</p>
+    </section>
+
+    <!-- Main Content -->
+    <main class="vision-container">
+      <!-- Content sections here -->
+    </main>
+
+    <!-- Back to Top Button -->
+    <div
+      class="back-to-top"
+      onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
+    >
+      <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <script>
+      // Scroll Progress Indicator
+      window.onscroll = () => {
+        // Progress bar
+        const winScroll =
+          document.body.scrollTop || document.documentElement.scrollTop;
+        const height =
+          document.documentElement.scrollHeight -
+          document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        document.querySelector(".progress-bar").style.width = scrolled + "%";
+
+        // Back to top button
+        const topButton = document.querySelector(".back-to-top");
+        if (
+          document.body.scrollTop > 20 ||
+          document.documentElement.scrollTop > 20
+        ) {
+          topButton.classList.add("visible");
+        } else {
+          topButton.classList.remove("visible");
+        }
+      };
+
+      // Close theme menu when clicking outside
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest(".theme-selector")) {
+          document.querySelector(".theme-menu").style.display = "none";
+        }
+      });
+    </script>
+  </body>
+</html>
