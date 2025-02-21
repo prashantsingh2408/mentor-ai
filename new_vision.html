@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Our Vision - Mentor Mind</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="new_vision.css" />
+  </head>
+  <body>
+    <!-- Progress Indicator -->
+
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="index.html" class="logo">Mentor Mind</a>
+        <div class="theme-selector">
+          <button
+            class="btn"
+            onclick="document.querySelector('.theme-menu').style.display = 'block'"
+          >
+            <i class="fas fa-palette"></i> Theme
+          </button>
+          <div class="theme-menu">
+            <div
+              class="theme-option active"
+              data-theme="light"
+              onclick="applyTheme('light')"
+            >
+              <i class="fas fa-sun"></i> Light
+            </div>
+            <div
+              class="theme-option"
+              data-theme="dark"
+              onclick="applyTheme('dark')"
+            >
+              <i class="fas fa-moon"></i> Dark
+            </div>
+            <div
+              class="theme-option"
+              data-theme="green"
+              onclick="applyTheme('green')"
+            >
+              <i class="fas fa-leaf"></i> Green
+            </div>
+            <div
+              class="theme-option"
+              data-theme="blue"
+              onclick="applyTheme('blue')"
+            >
+              <i class="fas fa-water"></i> Blue
+            </div>
+            <div
+              class="theme-option"
+              data-theme="professional"
+              onclick="applyTheme('professional')"
+            >
+              <i class="fas fa-briefcase"></i> Professional
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <h1 class="h1_main">Shaping the Future of Learning</h1>
+      <p class="animate">Empowering growth through intelligent mentorship</p>
+    </section>
+
+    <!-- Main Content -->
+    <main class="vision-container">
+      <!-- Content sections here -->
+      <section class="section">
+        <h1>Our Vision</h1>
+        <p>
+          At Mentor Mind, we envision a future where personalized AI-powered
+          growth is accessible to everyone, transforming how people learn,
+          develop, and achieve their professional goals.
+        </p>
+      </section>
+
+      <section class="section">
+        <h2>🎯 Key Strengths</h2>
+        <div class="feature-card">
+          <h3>Modular Expertise Areas</h3>
+          <ul>
+            <li>Executive Coaching with AI-powered leadership insights</li>
+            <li>Career Transition guidance</li>
+            <li>Interactive Language Learning</li>
+            <li>Fitness & Nutrition planning</li>
+            <li>Professional Mentorship</li>
+            <li>Business Growth strategies</li>
+            <li>Advanced Voice Interaction</li>
+            <li>Team Collaboration tools</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>💡 Technology & Innovation</h2>
+        <div class="grid">
+          <div class="feature-card">
+            <h3>AI-Powered Intelligence</h3>
+            <p>
+              Leveraging advanced AI models for personalized learning
+              experiences and real-time feedback.
+            </p>
+          </div>
+          <div class="feature-card">
+            <h3>Goal-Oriented Approach</h3>
+            <p>
+              Structured development paths with measurable outcomes and adaptive
+              learning paths.
+            </p>
+          </div>
+          <div class="feature-card">
+            <h3>Personalized Experience</h3>
+            <p>
+              Dynamic content adaptation based on individual progress and
+              learning style.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>🚀 Future Developments</h2>
+        <div class="feature-card">
+          <h3>Planned Enhancements</h3>
+          <ul>
+            <li>Advanced gamification elements</li>
+            <li>AI-driven mentor matching system</li>
+            <li>Deep integration with professional platforms</li>
+            <li>Enhanced voice interaction capabilities</li>
+            <li>Expanded learning modules and specializations</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>🎯 Our Mission</h2>
+        <div class="feature-card">
+          <p>
+            To empower individuals and organizations with cutting-edge AI
+            technology for continuous learning and development, making
+            professional growth accessible, engaging, and effective.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Back to Home -->
+    <footer>
+      <button class="back-to-top" onclick="scrollToTop()">⬆ Back to Top</button>
+    </footer>
+    <button class="back-to-home" onclick="location.href='index.html'">
+      🏠 Back to Home
+    </button>
+    <script src="new_vision.js"></script>
+  </body>
+</html>
