@@ -168,8 +168,17 @@ async function streamFromOpenAI(text) {
 
       const chatMessages = document.querySelector('.chat-messages');
       const responsePlaceholder = document.createElement('div');
-      responsePlaceholder.className = 'message assistant';
-      responsePlaceholder.innerHTML = '<b>AI:</b> <span class="content"></span>';
+      responsePlaceholder.className = 'flex items-start max-w-3xl';
+      responsePlaceholder.innerHTML = `
+          <div class="flex-shrink-0">
+              <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                  <i class="fas fa-robot text-blue-600"></i>
+              </div>
+          </div>
+          <div class="ml-3 bg-gray-100 rounded-lg p-4">
+              <p class="text-gray-800"><span class="content"></span></p>
+          </div>
+      `;
       chatMessages.appendChild(responsePlaceholder);
       const contentSpan = responsePlaceholder.querySelector('.content');
 
@@ -233,7 +242,7 @@ function speakText(text) {
 function displayMessage(role, text) {
     const chatMessages = document.querySelector('.chat-messages');
     const messageDiv = document.createElement('div');
-    messageDiv.className = `flex items-start max-w-3xl ${role === 'user' ? 'ml-auto' : ''}`;
+    messageDiv.className = role === 'user' ? 'flex items-start max-w-3xl ml-auto' : 'flex items-start max-w-3xl';
     
     const content = `
         ${role === 'user' ? `
@@ -247,8 +256,8 @@ function displayMessage(role, text) {
             </div>
         ` : `
             <div class="flex-shrink-0">
-                <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
-                    <i class="fas fa-language text-primary-600"></i>
+                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                    <i class="fas fa-robot text-blue-600"></i>
                 </div>
             </div>
             <div class="ml-3 bg-gray-100 rounded-lg p-4">
