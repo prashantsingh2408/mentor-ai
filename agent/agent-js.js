@@ -2,10 +2,26 @@
 document.addEventListener('DOMContentLoaded', () => {
   const chatMessages = document.querySelector('.chat-messages');
   chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  // Initialize speech recognition
+  initializeSpeechRecognition();
+
+  // Set up mic button click handler
+  const micButton = document.getElementById('micButton');
+  if (micButton) {
+    // Remove any existing listeners first
+    micButton.removeEventListener('click', handleMicClick);
+    // Add the click handler
+    micButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      handleMicClick(e);
+    });
+  }
 });
 
-// Voice Recognition
-let recognition;
+// Speech Recognition Setup
+let recognition = null;
 let isListening = false;
 let isSpeaking = false;
 
@@ -16,86 +32,118 @@ speechUtterance.lang = 'en-US';
 speechUtterance.rate = 1.0;
 speechUtterance.pitch = 1.0;
 
-function toggleSpeechRecognition(event) {
-  const voiceButton = document.querySelector('.voice-button');
-  const statusText = document.querySelector('.voice-status-text');
-  const speechFeedback = document.getElementById('speechFeedback');
-  
-  if (!isListening) {
-      if (isSpeaking) {
-          speechSynthesis.cancel();
-      }
-      voiceButton.classList.add('listening');
-      statusText.textContent = 'Tap to stop';
-      speechFeedback.style.display = 'block';
-      startListening();
-  } else {
-      voiceButton.classList.remove('listening');
-      statusText.textContent = 'Press to speak';
-      speechFeedback.style.display = 'none';
-      stopListening();
-  }
+function initializeSpeechRecognition() {
+    try {
+        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = "en-US";
+        
+        recognition.onresult = handleSpeechResult;
+        recognition.onerror = handleSpeechError;
+        recognition.onend = handleSpeechEnd;
+        
+        console.log('Speech recognition initialized');
+    } catch (error) {
+        console.error('Speech recognition failed to initialize:', error);
+    }
+}
+
+function handleMicClick(event) {
+    event.preventDefault();
+    const micButton = event.currentTarget;
+    const micWaves = micButton.parentElement.querySelector('.mic-waves');
+    
+    console.log('Mic clicked, current state:', isListening);
+    
+    if (!recognition) {
+        initializeSpeechRecognition();
+    }
+    
+    if (!isListening) {
+        startListening();
+        micButton.classList.add('listening');
+        micWaves.classList.remove('hidden');
+    } else {
+        stopListening();
+        micButton.classList.remove('listening');
+        micWaves.classList.add('hidden');
+    }
 }
 
 function startListening() {
-  try {
-      if (!recognition) {
-          recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-          recognition.continuous = true;
-          recognition.interimResults = true;
-          recognition.lang = "en-US";
-          recognition.maxAlternatives = 1;
-          
-          recognition.onresult = async function(event) {
-              const transcript = event.results[event.results.length - 1][0].transcript
-                  .trim()
-                  .toLowerCase();
-              console.log("User said:", transcript);
-
-              if (transcript) {
-                  displayMessage("user", transcript);
-
-                  if (transcript === "stop") {
-                      displayMessage("assistant", "Listening stopped.");
-                      stopListening();
-                      return;
-                  }
-
-                  try {
-                      await streamFromOpenAI(transcript);
-                  } catch (error) {
-                      console.error("OpenAI API Error:", error);
-                      displayMessage("assistant", "⚠ AI is currently unavailable. Please try again later.");
-                  }
-              }
-          };
-      }
-
-      recognition.start();
-      isListening = true;
-      document.getElementById('overlay').style.display = 'flex';
-      document.getElementById('voiceIndicator').style.display = 'flex';
-      document.getElementById('micButton').classList.add('active');
-  } catch (error) {
-      console.error('Speech recognition failed to start:', error);
-      alert('Speech recognition is not supported in this browser.');
-  }
+    try {
+        recognition.start();
+        isListening = true;
+        updateUIForListening(true);
+        console.log('Started listening');
+    } catch (error) {
+        console.error('Failed to start listening:', error);
+        alert('Speech recognition failed to start. Please try again.');
+        stopListening();
+    }
 }
 
 function stopListening() {
-  if (recognition) {
-      recognition.stop();
-  }
-  isListening = false;
-  const voiceButton = document.querySelector('.voice-button');
-  const statusText = document.querySelector('.voice-status-text');
-  const speechFeedback = document.getElementById('speechFeedback');
-  
-  voiceButton.classList.remove('listening');
-  statusText.textContent = 'Press to speak';
-  speechFeedback.style.display = 'none';
-  document.getElementById('overlay').style.display = 'none';
-  document.getElementById('voiceIndicator').style.display = 'none';
+    if (recognition) {
+        recognition.stop();
+    }
+    isListening = false;
+    updateUIForListening(false);
+    console.log('Stopped listening');
+}
+
+function updateUIForListening(isActive) {
+    const micButton = document.getElementById('micButton');
+    const micWaves = micButton?.parentElement.querySelector('.mic-waves');
+    const speechFeedback = document.getElementById('speechFeedback');
+    
+    if (isActive) {
+        micButton?.classList.add('listening');
+        micWaves?.classList.remove('hidden');
+        if (speechFeedback) speechFeedback.style.display = 'flex';
+    } else {
+        micButton?.classList.remove('listening');
+        micWaves?.classList.add('hidden');
+        if (speechFeedback) speechFeedback.style.display = 'none';
+    }
+}
+
+async function handleSpeechResult(event) {
+    const transcript = event.results[event.results.length - 1][0].transcript.trim();
+    console.log('Speech recognized:', transcript);
+
+    if (transcript) {
+        displayMessage("user", transcript);
+
+        if (transcript.toLowerCase() === "stop") {
+            stopListening();
+            return;
+        }
+
+        try {
+            await streamFromOpenAI(transcript);
+        } catch (error) {
+            console.error("OpenAI API Error:", error);
+            displayMessage("assistant", "⚠ AI is currently unavailable. Please try again later.");
+        }
+    }
+}
+
+function handleSpeechError(event) {
+    console.error('Speech recognition error:', event.error);
+    stopListening();
+}
+
+function handleSpeechEnd() {
+    if (isListening) {
+        try {
+            recognition.start();
+        } catch (error) {
+            console.error('Failed to restart recognition:', error);
+            stopListening();
+        }
+    }
 }
 
 async function streamFromOpenAI(text) {
@@ -183,34 +231,35 @@ function speakText(text) {
 }
 
 function displayMessage(role, text) {
-  const messageDiv = document.createElement('div');
-  messageDiv.className = `flex items-start max-w-3xl ${role === 'user' ? 'ml-auto' : ''}`;
-  
-  const content = `
-      ${role === 'user' ? `
-          <div class="mr-3 bg-primary-100 rounded-lg p-4">
-              <p class="text-gray-800">${text}</p>
-          </div>
-          <div class="flex-shrink-0">
-              <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                  <i class="fas fa-user text-gray-600"></i>
-              </div>
-          </div>
-      ` : `
-          <div class="flex-shrink-0">
-              <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
-                  <i class="fas fa-language text-primary-600"></i>
-              </div>
-          </div>
-          <div class="ml-3 bg-gray-100 rounded-lg p-4">
-              <p class="text-gray-800">${text}</p>
-          </div>
-      `}
-  `;
-  
-  messageDiv.innerHTML = content;
-  document.querySelector('.chat-messages').appendChild(messageDiv);
-  document.querySelector('.chat-messages').scrollTop = document.querySelector('.chat-messages').scrollHeight;
+    const chatMessages = document.querySelector('.chat-messages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `flex items-start max-w-3xl ${role === 'user' ? 'ml-auto' : ''}`;
+    
+    const content = `
+        ${role === 'user' ? `
+            <div class="mr-3 bg-primary-100 rounded-lg p-4">
+                <p class="text-gray-800">${text}</p>
+            </div>
+            <div class="flex-shrink-0">
+                <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                    <i class="fas fa-user text-gray-600"></i>
+                </div>
+            </div>
+        ` : `
+            <div class="flex-shrink-0">
+                <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
+                    <i class="fas fa-language text-primary-600"></i>
+                </div>
+            </div>
+            <div class="ml-3 bg-gray-100 rounded-lg p-4">
+                <p class="text-gray-800">${text}</p>
+            </div>
+        `}
+    `;
+    
+    messageDiv.innerHTML = content;
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 // Initialize voice selection
@@ -229,73 +278,54 @@ window.addEventListener('DOMContentLoaded', () => {
   };
 });
 
-// Add this to handle suggestions panel toggle
+// Update the toggleSuggestions function
 function toggleSuggestions() {
-  const suggestionsPanel = document.getElementById('suggestionsPanel');
-  suggestionsPanel.classList.toggle('hidden');
+    const panel = document.getElementById('suggestionsPanel');
+    const mainContent = document.querySelector('.main-content');
+    const isCollapsed = panel.classList.contains('translate-x-full');
+    
+    if (isCollapsed) {
+        // Expand
+        panel.classList.remove('translate-x-full');
+        panel.classList.add('translate-x-0');
+        mainContent?.classList.add('panel-expanded');
+    } else {
+        // Collapse
+        panel.classList.remove('translate-x-0');
+        panel.classList.add('translate-x-full');
+        mainContent?.classList.remove('panel-expanded');
+    }
 }
 
+// Initialize panel state on load
 document.addEventListener('DOMContentLoaded', () => {
-  const modeButtons = document.querySelectorAll('.mode-button');
-  const chatMessages = document.querySelector('.chat-messages');
-  const avatarView = document.getElementById('avatarView');
-  
-  // Set initial mode
-  setMode('chat');
-
-  modeButtons.forEach(button => {
-      button.addEventListener('click', () => {
-          // Remove active class from all buttons
-          modeButtons.forEach(btn => btn.classList.remove('active'));
-          // Add active class to clicked button
-          button.classList.add('active');
-          
-          const mode = button.getAttribute('data-mode');
-          setMode(mode);
-      });
-  });
-
-  function setMode(mode) {
-      const voiceControls = document.querySelector('.voice-mode-controls');
-      const chatInput = document.querySelector('.chat-input');
-      const chatMessages = document.querySelector('.chat-messages');
-      const avatarView = document.getElementById('avatarView');
-      
-      // Hide all mode-specific elements first
-      voiceControls.classList.add('hidden');
-      avatarView.classList.add('hidden');
-      chatMessages.classList.remove('hidden');
-      chatInput.classList.remove('hidden');
-
-      // Show/hide elements based on mode
-      switch(mode) {
-          case 'voice':
-              voiceControls.classList.remove('hidden');
-              chatInput.classList.add('hidden');
-              chatMessages.classList.add('pb-32'); // Add padding for voice controls
-              break;
-          case 'avatar':
-              chatMessages.classList.add('hidden');
-              chatInput.classList.add('hidden');
-              avatarView.classList.remove('hidden');
-              break;
-          case 'chat':
-              chatMessages.classList.remove('pb-32'); // Remove extra padding
-              break;
-      }
-
-      // Stop listening if switching away from voice mode
-      if (mode !== 'voice' && isListening) {
-          stopListening();
-      }
-  }
-
-  // Initialize chat scroll position
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-
-  // Add event listener for the main voice button
-  const mainVoiceButton = document.getElementById('mainVoiceButton');
-  if (mainVoiceButton) {
-      mainVoiceButton.addEventListener('click', toggleSpeechRecognition);
-  }
+    const panel = document.getElementById('suggestionsPanel');
+    if (panel) {
+        panel.classList.add('translate-x-full');
+    }
 });
+
+function toggleAvatarMode() {
+    const chatInput = document.querySelector('.chat-input');
+    const chatMessages = document.querySelector('.chat-messages');
+    const avatarView = document.getElementById('avatarView');
+    const avatarButton = document.getElementById('avatarButton');
+    
+    if (avatarView.classList.contains('hidden')) {
+        // Switch to avatar mode
+        chatMessages.classList.add('hidden');
+        chatInput.classList.add('hidden');
+        avatarView.classList.remove('hidden');
+        avatarButton.classList.add('active');
+        // Stop listening if active
+        if (isListening) {
+            stopListening();
+        }
+    } else {
+        // Switch back to chat mode
+        chatMessages.classList.remove('hidden');
+        chatInput.classList.remove('hidden');
+        avatarView.classList.add('hidden');
+        avatarButton.classList.remove('active');
+    }
+}
