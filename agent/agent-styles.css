@@ -1,0 +1,183 @@
+.voice-mode-controls {
+  position: fixed;
+  bottom: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.voice-button {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: #475569;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(71, 85, 105, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.voice-button::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.voice-button:hover::before {
+  opacity: 1;
+}
+
+.voice-button i {
+  font-size: 2.5rem;
+  color: white;
+  transition: transform 0.3s ease;
+}
+
+.voice-button:hover i {
+  transform: scale(1.1);
+}
+
+.voice-button.listening {
+  animation: pulseGlow 2s infinite;
+  background: #DC2626;
+}
+
+.voice-status-text {
+  font-size: 1.2rem;
+  color: #1F2937;
+  font-weight: 500;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.voice-waves {
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  pointer-events: none;
+}
+
+.wave {
+  border: 3px solid rgba(71, 85, 105, 0.3);
+  animation: wave 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.speech-feedback {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.95);
+  padding: 1rem 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  display: none;
+  z-index: 100;
+  animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(71, 85, 105, 0.1);
+}
+
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 20px rgba(220, 38, 38, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+  }
+}
+
+/* Add styles for voice mode messages */
+.voice-message {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: messageSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes messageSlideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Update the mode buttons style */
+.mode-button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mode-button i {
+  font-size: 1.1rem;
+  transition: transform 0.3s ease;
+}
+
+.mode-button:hover i {
+  transform: scale(1.1);
+}
+
+.bg-primary-600 {
+  background-color: #475569;
+}
+
+.hover\:bg-primary-700:hover {
+  background-color: #334155;
+}
+
+.text-primary-600 {
+  color: #475569;
+}
+
+.hover\:text-primary-600:hover {
+  color: #475569;
+}
+
+.bg-primary-100 {
+  background-color: #f1f5f9;
+}
+
+/* Update link colors from blue to match primary theme */
+.text-blue-500 {
+  color: #4338CA; /* Change blue to primary indigo */
+}
+
+a.text-blue-500:hover {
+  color: #3730A3; /* Darker shade for hover */
+}
+
+/* Update any remaining blue references */
+a {
+  color: #4338CA;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #3730A3;
+  text-decoration: underline;
+}
