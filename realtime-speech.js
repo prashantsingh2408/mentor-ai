@@ -34,12 +34,20 @@ function stopListening() {
 }
 
 recognition.onresult = async function (event) {
-  finalTranscript =
-    event.results[event.results.length - 1][0].transcript.trim();
+  finalTranscript = event.results[event.results.length - 1][0].transcript
+    .trim()
+    .toLowerCase();
   console.log("User said:", finalTranscript);
 
   if (finalTranscript) {
     chatMessages.innerHTML += `<br><b>You:</b> ${finalTranscript}`;
+
+    // If user says "stop", stop recognition and reply immediately
+    if (finalTranscript === "stop") {
+      displayResponse("AI: Listening stopped.");
+      stopListening();
+      return; // Prevents further API calls
+    }
 
     try {
       const response = await sendToOpenAI(finalTranscript);
