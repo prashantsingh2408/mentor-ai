@@ -204,9 +204,18 @@
       <!-- Suggestions Panel -->
       <div
         id="suggestionsPanel"
-        class="fixed lg:absolute top-0 right-0 h-[calc(100vh-64px)] w-96 transform translate-x-full transition-transform duration-300 ease-in-out bg-white overflow-y-auto shadow-lg border-l border-gray-200"
+        class="fixed lg:absolute top-0 right-0 h-[calc(100vh-64px)] w-full lg:w-96 transform translate-x-full transition-transform duration-300 ease-in-out bg-white overflow-y-auto shadow-lg border-l border-gray-200"
       >
-        <div class="suggestions-button-wrapper absolute left-0 top-4 transform -translate-x-full">
+        <!-- Add close button for mobile -->
+        <button 
+          onclick="toggleSuggestions()"
+          class="absolute top-4 right-4 p-2 rounded-lg text-gray-500 hover:bg-gray-100 lg:hidden"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+
+        <!-- Desktop collapse button -->
+        <div class="suggestions-button-wrapper absolute left-0 top-4 transform -translate-x-full hidden lg:block">
           <button 
             onclick="toggleSuggestions()"
             class="flex items-center gap-2 px-3 py-2 bg-white rounded-l-lg border border-r-0 border-gray-200 shadow-sm hover:bg-gray-50"
@@ -470,6 +479,66 @@
       transform: translateY(-1px);
       box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
+
+    /* Mobile suggestions panel */
+    @media (max-width: 1024px) {
+      #suggestionsPanel {
+        z-index: 50;
+      }
+
+      #suggestionsPanel.translate-x-0 {
+        box-shadow: -4px 0 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .mobile-chat-container {
+        transition: transform 0.3s ease;
+      }
+
+      /* Optional: Dim the background when panel is open */
+      .suggestions-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 45;
+      }
+
+      .suggestions-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+
+    /* Update the toggle function in JavaScript */
+    function toggleSuggestions() {
+        const panel = document.getElementById('suggestionsPanel');
+        const isCollapsed = panel.classList.contains('translate-x-full');
+        const overlay = document.querySelector('.suggestions-overlay');
+        
+        if (isCollapsed) {
+            // Expand
+            panel.classList.remove('translate-x-full');
+            panel.classList.add('translate-x-0');
+            if (window.innerWidth <= 1024) {
+                document.body.style.overflow = 'hidden';
+                overlay?.classList.add('active');
+            }
+        } else {
+            // Collapse
+            panel.classList.remove('translate-x-0');
+            panel.classList.add('translate-x-full');
+            document.body.style.overflow = '';
+            overlay?.classList.remove('active');
+        }
+    }
+
+    // Add overlay div to the body
+    document.body.insertAdjacentHTML('beforeend', '<div class="suggestions-overlay" onclick="toggleSuggestions()"></div>');
     </style>
   </body>
 </html>
