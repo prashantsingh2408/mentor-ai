@@ -149,32 +149,43 @@
                 </button>
               </div>
             </div>
-            <div class="flex gap-2 mt-2">
-              <div class="flex flex-wrap gap-2 overflow-x-auto">
-                <button class="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 flex items-center gap-2 whitespace-nowrap">
+            <div class="flex gap-2 mt-2 relative">
+              <!-- Left fade indicator with icon -->
+              <div class="absolute left-0 top-0 h-full flex items-center pointer-events-none z-10">
+                <div class="h-full w-12 bg-gradient-to-r from-white to-transparent flex items-center">
+                  <i class="fas fa-chevron-left text-gray-400 ml-1"></i>
+                </div>
+              </div>
+
+              <!-- Single scrollable container for all buttons -->
+              <div class="w-full overflow-x-auto flex gap-2 scrollbar-hide px-8">
+                <button class="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 flex items-center gap-2 whitespace-nowrap flex-shrink-0">
                   <i class="fas fa-graduation-cap"></i>
                   Start English Learning Path
                 </button>
-                <button class="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 flex items-center gap-2 whitespace-nowrap">
+                <button class="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 flex items-center gap-2 whitespace-nowrap flex-shrink-0">
                   <i class="fas fa-chart-line"></i>
                   Professional Language Skills
                 </button>
-                <button class="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 flex items-center gap-2 whitespace-nowrap">
+                <button class="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 flex items-center gap-2 whitespace-nowrap flex-shrink-0">
                   <i class="fas fa-globe"></i>
                   Cultural Immersion Practice
                 </button>
-                <button class="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 flex items-center gap-2 whitespace-nowrap">
+                <button class="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 flex items-center gap-2 whitespace-nowrap flex-shrink-0">
                   <i class="fas fa-comments"></i>
                   Conversation Scenarios
                 </button>
-                <button class="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 flex items-center gap-2 whitespace-nowrap">
+                <button class="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 flex items-center gap-2 whitespace-nowrap flex-shrink-0">
                   <i class="fas fa-tasks"></i>
                   Set Learning Goals
                 </button>
               </div>
-              <div class="ml-auto flex items-center gap-2">
-                <span class="text-sm text-gray-600">Language AI</span>
-                <i class="fas fa-chevron-down text-gray-400"></i>
+
+              <!-- Right fade indicator with icon -->
+              <div class="absolute right-0 top-0 h-full flex items-center pointer-events-none z-10">
+                <div class="h-full w-12 bg-gradient-to-l from-white to-transparent flex items-center justify-end">
+                  <i class="fas fa-chevron-right text-gray-400 mr-1"></i>
+                </div>
               </div>
             </div>
           </div>
@@ -409,6 +420,55 @@
         width: 100%;
         max-width: 1000px; /* Match the new container width */
         margin: 0.5rem auto 0;
+    }
+
+    /* Hide scrollbar but keep functionality */
+    .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Fixed buttons container */
+    .flex-none {
+      flex-shrink: 0;
+    }
+
+    /* Ensure buttons don't shrink */
+    .flex-shrink-0 {
+      flex-shrink: 0;
+    }
+
+    /* Update scroll container styles */
+    .overflow-x-auto {
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Remove old fade effects */
+    .overflow-x-auto::after,
+    .overflow-x-auto::before {
+      display: none;
+    }
+
+    /* Fade indicators */
+    .from-white {
+      --tw-gradient-from: rgb(255 255 255 / 1);
+      --tw-gradient-to: rgb(255 255 255 / 0);
+      --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+    }
+
+    /* Add shadow effect to buttons */
+    .bg-gray-100 {
+      transition: all 0.2s ease;
+    }
+
+    .bg-gray-100:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
     </style>
   </body>
