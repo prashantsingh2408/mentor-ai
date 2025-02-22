@@ -1,2 +1,2 @@
-# mentor-ai 
+# mentor-ai
 
