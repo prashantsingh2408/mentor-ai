@@ -49,9 +49,16 @@ function startListening() {
 
 function stopListening() {
   recognition.stop();
+  speechSynthesis.cancel(); // Stop any ongoing speech
   micButton.classList.remove("active");
   micButton.textContent = "🎤 Start Listening";
   isListening = false;
+  isSpeaking = false;
+  isProcessing = false; // Reset processing flag
+  if (silenceTimer) {
+    clearTimeout(silenceTimer); // Clear the silence timer
+  }
+  console.log("Stopped listening and speaking.");
 }
 
 // Updated recognition.onresult with silence detection
@@ -71,7 +78,7 @@ recognition.onresult = async function (event) {
   if (result.isFinal) {
     console.log("User said:", transcript);
 
-    // Start a new timer to wait for 3 seconds after the user stops speaking
+    // Start a new timer to wait for 2 seconds after the user stops speaking
     silenceTimer = setTimeout(async () => {
       isProcessing = true; // Set processing flag
 
@@ -79,23 +86,25 @@ recognition.onresult = async function (event) {
         displayMessage("user", transcript);
 
         // Stop listening if the user says "stop"
-        if (transcript === "stop") {
+        if (transcript === "stop the program") {
           displayMessage("assistant", "Listening stopped.");
-          stopListening();
-          isProcessing = false; // Reset processing flag
+          stopListening(); // Stop everything
           return;
         }
 
-        try {
-          await streamFromOpenAI(transcript);
-        } catch (error) {
-          console.error("OpenAI API Error:", error);
-          displayMessage(
-            "assistant",
-            "⚠ AI is currently unavailable. Please try again later."
-          );
-        } finally {
-          isProcessing = false; // Reset processing flag
+        // Only process if the user said something meaningful
+        if (transcript.trim().length > 0) {
+          try {
+            await streamFromOpenAI(transcript);
+          } catch (error) {
+            console.error("OpenAI API Error:", error);
+            displayMessage(
+              "assistant",
+              "⚠ AI is currently unavailable. Please try again later."
+            );
+          } finally {
+            isProcessing = false; // Reset processing flag
+          }
         }
       }
     }, SILENCE_DELAY);
@@ -131,14 +140,18 @@ async function streamFromOpenAI(text) {
 
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
-    let responseText = "";
+    let buffer = "";
 
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
 
       const chunk = decoder.decode(value);
-      const lines = chunk.split("\n").filter((line) => line.trim());
+      buffer += chunk;
+
+      // Process each line in the buffer
+      const lines = buffer.split("\n");
+      buffer = lines.pop(); // Save the last incomplete line back to the buffer
 
       for (const line of lines) {
         if (line.startsWith("data: ")) {
@@ -149,8 +162,7 @@ async function streamFromOpenAI(text) {
             const parsed = JSON.parse(data);
             const content = parsed.choices[0]?.delta?.content || "";
             if (content) {
-              responseText += content;
-              contentSpan.textContent = responseText;
+              contentSpan.textContent += content;
               chatMessages.scrollTop = chatMessages.scrollHeight;
             }
           } catch (error) {
@@ -161,7 +173,7 @@ async function streamFromOpenAI(text) {
     }
 
     // Speak the response
-    speakText(responseText);
+    speakText(contentSpan.textContent);
   } catch (error) {
     console.error("Streaming Error:", error);
     displayMessage("assistant", "⚠ Error in AI response. Please try again.");
