@@ -87,9 +87,9 @@
           <div class="flex items-start max-w-3xl">
             <div class="flex-shrink-0">
               <div
-                class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center"
+                class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center"
               >
-                <i class="fas fa-robot text-blue-600"></i>
+                <i class="fas fa-language text-primary-600"></i>
               </div>
             </div>
             <div class="ml-3 bg-gray-100 rounded-lg p-4">
@@ -391,24 +391,12 @@
     }
 
     /* Message container styles */
-    .chat-messages {
-        max-width: 1000px;
-        width: calc(100% - 300px);
-        margin: 0 auto;
-        padding: 1rem 2rem;
-    }
-
-    /* Individual message container */
-    .chat-messages > div {
+    .chat-messages > div,
+    .message {
         display: flex;
         align-items: flex-start;
         margin-bottom: 1rem;
-        max-width: 100%;
-    }
-
-    /* User message alignment */
-    .chat-messages > div.ml-auto {
-        justify-content: flex-end;
+        width: 100%;
     }
 
     /* Message content styles */
@@ -416,66 +404,23 @@
     .chat-messages .bg-primary-100 {
         padding: 1rem;
         border-radius: 0.75rem;
-        max-width: 70%;
-    }
-
-    /* Avatar container */
-    .chat-messages .flex-shrink-0 {
-        flex: none;
-        width: 2rem;
-    }
-
-    /* Bot message specific */
-    .chat-messages > div:not(.ml-auto) {
-        padding-right: 20%;
-    }
-
-    /* User message specific */
-    .chat-messages > div.ml-auto {
-        padding-left: 20%;
-    }
-
-    /* Message text styles */
-    .chat-messages p {
-        margin: 0;
-        line-height: 1.5;
-    }
-
-    /* List styles in messages */
-    .chat-messages ul {
-        margin: 0.5rem 0;
-        padding-left: 0.5rem;
-    }
-
-    .chat-messages li {
-        margin-bottom: 0.25rem;
+        max-width: 85%;
     }
 
     /* Responsive adjustments */
     @media (max-width: 1280px) {
-        .chat-messages {
-            width: calc(100% - 150px);
+        .chat-messages,
+        .chat-input .max-w-3xl {
+            width: calc(100% - 150px); /* Adjusted for larger width */
             padding: 1rem;
-        }
-        
-        .chat-messages > div:not(.ml-auto) {
-            padding-right: 10%;
-        }
-        
-        .chat-messages > div.ml-auto {
-            padding-left: 10%;
         }
     }
 
     @media (max-width: 768px) {
-        .chat-messages {
+        .chat-messages,
+        .chat-input .max-w-3xl {
             width: 100%;
             padding: 1rem;
-        }
-        
-        .chat-messages .bg-gray-100,
-        .chat-messages .bg-primary-100 {
-            max-width: 85%;
         }
     }
 
