@@ -136,6 +136,28 @@
             opacity: 1;
             box-shadow: 0 0 0 2px var(--accent-color);
         }
+
+        /* Add purple theme styles */
+        .theme-purple {
+            --bg-color: #ffffff;
+            --text-color: #1f2937;
+            --accent-color: #8b5cf6;  /* Purple-600 */
+            --accent-dark: #7c3aed;   /* Purple-700 */
+            --accent-light: #a78bfa;  /* Purple-400 */
+            --border-color: #e5e7eb;
+        }
+
+        /* Purple theme specific gradients */
+        .theme-purple .gradient-text {
+            background: linear-gradient(120deg, #8b5cf6, #a78bfa);
+            -webkit-background-clip: text;
+        }
+
+        /* Purple theme button states */
+        .theme-purple .theme-btn.active {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+        }
     </style>
 </head>
 <body class="bg-[var(--bg-color)]">
@@ -173,6 +195,14 @@
                         onclick="applyTheme('blue')"
                         title="Blue Theme">
                         <i class="fas fa-water text-[var(--text-color)]"></i>
+                    </button>
+                    <button 
+                        class="theme-btn w-8 h-8 rounded-full transition-all duration-200 hover:scale-110 flex items-center justify-center bg-[var(--bg-color)] border-2"
+                        style="border-color: var(--text-color)"
+                        data-theme="purple"
+                        onclick="applyTheme('purple')"
+                        title="Purple Theme">
+                        <i class="fas fa-gem text-[var(--text-color)]"></i>
                     </button>
                 </div>
 
@@ -354,7 +384,7 @@
                 activeButton.classList.add('active');
             }
 
-            root.classList.remove('theme-dark', 'theme-green', 'theme-blue');
+            root.classList.remove('theme-dark', 'theme-green', 'theme-blue', 'theme-purple');
             
             if (theme !== 'light') {
                 root.classList.add(`theme-${theme}`);

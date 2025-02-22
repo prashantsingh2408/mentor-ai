@@ -26,7 +26,7 @@
             }
 
             // Remove any existing theme classes
-            root.classList.remove('theme-dark', 'theme-green', 'theme-blue');
+            root.classList.remove('theme-dark', 'theme-green', 'theme-blue', 'theme-purple');
             
             // Add the new theme class
             if (theme !== 'light') {
@@ -280,6 +280,26 @@
         .zoom-icon:hover {
             transform: scale(1.1);
         }
+
+        /* Purple theme styles */
+        .theme-purple {
+            --bg-color: #ffffff;
+            --text-color: #1f2937;
+            --accent-color: #8b5cf6;  /* Purple-600 */
+            --accent-dark: #7c3aed;   /* Purple-700 */
+            --accent-light: #a78bfa;  /* Purple-400 */
+            --border-color: #e5e7eb;
+        }
+
+        .theme-purple .gradient-text {
+            background: linear-gradient(120deg, #8b5cf6, #a78bfa);
+            -webkit-background-clip: text;
+        }
+
+        .theme-purple .theme-btn.active {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+        }
     </style>
     <link rel="stylesheet" href="helper-chatbot/css.css">
 </head>
@@ -336,6 +356,14 @@
                             title="Blue Theme">
                             <i class="fas fa-water text-xl text-[var(--text-color)]"></i>
                         </button>
+                        <button 
+                            class="theme-btn w-10 h-10 rounded-full transition-all duration-200 hover:scale-110 flex items-center justify-center bg-[var(--bg-color)] border-2 shadow-md"
+                            style="border-color: var(--text-color)"
+                            data-theme="purple"
+                            onclick="applyTheme('purple')"
+                            title="Purple Theme">
+                            <i class="fas fa-gem text-xl text-[var(--text-color)]"></i>
+                        </button>
                     </div>
                 </nav>
             </div>
@@ -379,6 +407,14 @@
                         onclick="applyTheme('blue')"
                         title="Blue Theme">
                         <i class="fas fa-water text-[var(--text-color)]"></i>
+                    </button>
+                    <button 
+                        class="theme-btn w-8 h-8 rounded-full transition-all duration-200 hover:scale-110 flex items-center justify-center bg-[var(--bg-color)] border-2"
+                        style="border-color: var(--text-color)"
+                        data-theme="purple"
+                        onclick="applyTheme('purple')"
+                        title="Purple Theme">
+                        <i class="fas fa-gem text-[var(--text-color)]"></i>
                     </button>
                 </div>
             </div>
@@ -992,7 +1028,7 @@
             <div class="text-center">
                 <a href="https://lablab.ai/event/generative-ai-hackathon-with-ibm-granite" 
                    target="_blank"
-                   class="inline-flex items-center px-8 mt-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-300">
+                   class="inline-flex items-center px-8 mt-4 py-3 bg-[var(--accent-color)] hover:bg-[var(--accent-dark)] text-white font-medium rounded-lg transition duration-300">
                     <i class="fas fa-code-branch mr-2"></i>
                     Join IBM Granite AI Hackathon
                 </a>
