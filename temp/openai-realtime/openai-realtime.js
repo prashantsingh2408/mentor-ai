@@ -18,10 +18,6 @@ let isListening = false;
 let isSpeaking = false;
 let isProcessing = false; // Flag to prevent overlapping processing
 
-// Silence detection variables
-let silenceTimer = null; // Timer to detect silence
-const SILENCE_DELAY = 3000; // 3 seconds delay after user stops speaking
-
 // Stop speaking when mic is activated
 micButton.addEventListener("click", () => {
   if (isListening) {
@@ -54,47 +50,37 @@ function stopListening() {
   isListening = false;
 }
 
-// Updated recognition.onresult with silence detection
 recognition.onresult = async function (event) {
   if (isProcessing) return; // Ignore new results while processing the previous one
+  isProcessing = true; // Set processing flag
 
-  // Reset the silence timer whenever new speech input is detected
-  if (silenceTimer) {
-    clearTimeout(silenceTimer);
-  }
+  const transcript = event.results[event.results.length - 1][0].transcript
+    .trim()
+    .toLowerCase();
+  console.log("User said:", transcript);
 
-  // Start a new timer to wait for 3 seconds after the user stops speaking
-  silenceTimer = setTimeout(async () => {
-    isProcessing = true; // Set processing flag
+  if (transcript) {
+    displayMessage("user", transcript);
 
-    const transcript = event.results[event.results.length - 1][0].transcript
-      .trim()
-      .toLowerCase();
-    console.log("User said:", transcript);
-
-    if (transcript) {
-      displayMessage("user", transcript);
-
-      if (transcript === "stop") {
-        displayMessage("assistant", "Listening stopped.");
-        stopListening();
-        isProcessing = false; // Reset processing flag
-        return;
-      }
-
-      try {
-        await streamFromOpenAI(transcript);
-      } catch (error) {
-        console.error("OpenAI API Error:", error);
-        displayMessage(
-          "assistant",
-          "⚠ AI is currently unavailable. Please try again later."
-        );
-      } finally {
-        isProcessing = false; // Reset processing flag
-      }
+    if (transcript === "stop") {
+      displayMessage("assistant", "Listening stopped.");
+      stopListening();
+      isProcessing = false; // Reset processing flag
+      return;
     }
-  }, SILENCE_DELAY);
+
+    try {
+      await streamFromOpenAI(transcript);
+    } catch (error) {
+      console.error("OpenAI API Error:", error);
+      displayMessage(
+        "assistant",
+        "⚠ AI is currently unavailable. Please try again later."
+      );
+    } finally {
+      isProcessing = false; // Reset processing flag
+    }
+  }
 };
 
 async function streamFromOpenAI(text) {
@@ -103,7 +89,7 @@ async function streamFromOpenAI(text) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer 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`, // Replace with your OpenAI API key
+        Authorization: `Bearer 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`,
       },
       body: JSON.stringify({
         model: "gpt-3.5-turbo",
