@@ -239,6 +239,47 @@
                 line-height: 1.6;
             }
         }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            cursor: zoom-out;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 90%;
+            max-height: 90vh;
+        }
+
+        .architecture-mindmap {
+            cursor: zoom-in;
+            position: relative;
+        }
+
+        .zoom-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .zoom-icon:hover {
+            transform: scale(1.1);
+        }
     </style>
     <link rel="stylesheet" href="helper-chatbot/css.css">
 </head>
@@ -868,6 +909,18 @@
                         <i class="fas fa-code text-3xl text-[var(--accent-color)]"></i>
                         <h3 class="text-2xl font-semibold text-[var(--text-color)] ml-4">Implementation Details</h3>
                     </div>
+                    
+                    <!-- Architecture Diagram -->
+                    <div class="mb-8 architecture-mindmap relative" onclick="openModal()">
+                        <div class="zoom-icon">
+                            <i class="fas fa-search-plus text-gray-600"></i>
+                        </div>
+                        <img src="architecture.png" 
+                             alt="Mentor Mind Architecture Diagram" 
+                             class="w-full max-w-3xl mx-auto rounded-lg shadow-md"
+                             style="max-height: 300px; object-fit: contain;">
+                    </div>
+
                     <ul class="space-y-4">
                         <li class="flex items-start">
                             <i class="fas fa-check text-[var(--accent-color)] mt-1 mr-3"></i>
@@ -886,11 +939,26 @@
                             <span class="text-[var(--text-color)] opacity-80">Real-time interaction and feedback system</span>
                         </li>
                     </ul>
+                    
+                    <a href="architecture.html" 
+                       class="inline-flex items-center mt-8 px-6 py-3 bg-[var(--accent-color)] hover:bg-[var(--accent-dark)] text-white font-semibold rounded-lg transition duration-300">
+                        <i class="fas fa-project-diagram mr-2"></i>
+                        View Technical Architecture
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
                 </div>
 
                 <!-- Hackathon Goals -->
-                <div class="bg-[var(--bg-color)] p-8 rounded-xl shadow-md border border-[var(--border-color)] hover:shadow-lg transition-all duration-300">
-                    <h3 class="text-2xl font-semibold text-[var(--text-color)] mb-6">Project Goals</h3>
+                <div class="bg-[var(--bg-color)] p-8 rounded-xl shadow-md border border-[var(--border-color)] hover:shadow-lg transition-all duration-300 h-full">
+                    <div class="flex items-center mb-6">
+                        <i class="fas fa-flag text-3xl text-[var(--accent-color)]"></i>
+                        <h3 class="text-2xl font-semibold text-[var(--text-color)] ml-4">Project Goals</h3>
+                    </div>
+                    
+                    <div class="mb-8">
+                        <p class="text-[var(--text-color)] opacity-80">Our mission is to revolutionize education through AI-powered mentoring and personalized learning experiences.</p>
+                    </div>
+
                     <ul class="space-y-4">
                         <li class="flex items-start">
                             <i class="fas fa-target text-[var(--accent-color)] mt-1 mr-3"></i>
@@ -908,62 +976,15 @@
                             <i class="fas fa-globe text-[var(--accent-color)] mt-1 mr-3"></i>
                             <span class="text-[var(--text-color)] opacity-80">Scale educational support globally</span>
                         </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-chart-line text-[var(--accent-color)] mt-1 mr-3"></i>
+                            <span class="text-[var(--text-color)] opacity-80">Continuously improve and adapt based on user feedback and performance metrics</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-graduation-cap text-[var(--accent-color)] mt-1 mr-3"></i>
+                            <span class="text-[var(--text-color)] opacity-80">Foster a lifelong learning environment with adaptive curriculum</span>
+                        </li>
                     </ul>
-                </div>
-            </div>
-
-            <!-- Technologies Used Section -->
-            <div class="mt-16">
-                <h3 class="text-2xl font-semibold text-[var(--text-color)] text-center mb-8">Technologies Powering Mentor Mind</h3>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    <!-- IBM Granite -->
-                    <div class="bg-[var(--bg-color)] p-6 rounded-xl shadow-md border border-[var(--border-color)] hover:shadow-lg transition-all duration-300 text-center">
-                        <i class="fas fa-microchip text-4xl text-[var(--accent-color)] mb-4"></i>
-                        <h4 class="font-semibold text-[var(--text-color)]">IBM Granite AI</h4>
-                        <p class="text-sm text-[var(--text-color)] opacity-80 mt-2">Core AI Model</p>
-                    </div>
-
-                    <!-- IBM Cloud -->
-                    <div class="bg-[var(--bg-color)] p-6 rounded-xl shadow-md border border-[var(--border-color)] hover:shadow-lg transition-all duration-300 text-center">
-                        <i class="fas fa-cloud text-4xl text-[var(--accent-color)] mb-4"></i>
-                        <h4 class="font-semibold text-[var(--text-color)]">IBM Cloud</h4>
-                        <p class="text-sm text-[var(--text-color)] opacity-80 mt-2">Infrastructure</p>
-                    </div>
-
-                    <!-- Frontend -->
-                    <div class="bg-[var(--bg-color)] p-6 rounded-xl shadow-md border border-[var(--border-color)] hover:shadow-lg transition-all duration-300 text-center">
-                        <i class="fab fa-react text-4xl text-[var(--accent-color)] mb-4"></i>
-                        <h4 class="font-semibold text-[var(--text-color)]">React & TailwindCSS</h4>
-                        <p class="text-sm text-[var(--text-color)] opacity-80 mt-2">Frontend Framework</p>
-                    </div>
-
-                    <!-- Backend -->
-                    <div class="bg-[var(--bg-color)] p-6 rounded-xl shadow-md border border-[var(--border-color)] hover:shadow-lg transition-all duration-300 text-center">
-                        <i class="fab fa-node-js text-4xl text-[var(--accent-color)] mb-4"></i>
-                        <h4 class="font-semibold text-[var(--text-color)]">Node.js & Express</h4>
-                        <p class="text-sm text-[var(--text-color)] opacity-80 mt-2">Backend Server</p>
-                    </div>
-
-                    <!-- OpenAI API -->
-                    <div class="bg-[var(--bg-color)] p-6 rounded-xl shadow-md border border-[var(--border-color)] hover:shadow-lg transition-all duration-300 text-center">         
-                        <i class="fas fa-brain text-4xl text-[var(--accent-color)] mb-4"></i>
-                        <h4 class="font-semibold text-[var(--text-color)]">OpenAI API</h4>
-                        <p class="text-sm text-[var(--text-color)] opacity-80 mt-2">AI Model</p>
-                    </div>
-
-                    <!-- Add ElevenLabs API -->
-                    <div class="bg-[var(--bg-color)] p-6 rounded-xl shadow-md border border-[var(--border-color)] hover:shadow-lg transition-all duration-300 text-center">         
-                        <i class="fas fa-microphone-alt text-4xl text-[var(--accent-color)] mb-4"></i>
-                        <h4 class="font-semibold text-[var(--text-color)]">ElevenLabs API</h4>
-                        <p class="text-sm text-[var(--text-color)] opacity-80 mt-2">Voice Generation</p>
-                    </div>
-
-                    <!-- Add Voice Avatar -->
-                    <div class="bg-[var(--bg-color)] p-6 rounded-xl shadow-md border border-[var(--border-color)] hover:shadow-lg transition-all duration-300 text-center">         
-                        <i class="fas fa-user-circle text-4xl text-[var(--accent-color)] mb-4"></i>
-                        <h4 class="font-semibold text-[var(--text-color)]">Voice Avatar</h4>
-                        <p class="text-sm text-[var(--text-color)] opacity-80 mt-2">Interactive Voice AI</p>
-                    </div>
                 </div>
             </div>
 
@@ -1229,6 +1250,32 @@
         // Make functions available globally
         window.selectMentor = selectMentor;
         window.sendMessage = sendMessage;
+    </script>
+
+    <!-- Add modal for zoomed view -->
+    <div id="archModal" class="modal" onclick="closeModal()">
+        <img src="architecture.png" 
+             alt="Mentor Mind Architecture Diagram" 
+             class="modal-content">
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById("archModal").style.display = "block";
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeModal() {
+            document.getElementById("archModal").style.display = "none";
+            document.body.style.overflow = "auto";
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape") {
+                closeModal();
+            }
+        });
     </script>
 </body>
 </html>
