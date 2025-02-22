@@ -18,6 +18,10 @@ let isListening = false;
 let isSpeaking = false;
 let isProcessing = false; // Flag to prevent overlapping processing
 
+// Silence detection variables
+let silenceTimer = null; // Timer to detect silence
+const SILENCE_DELAY = 2000; // 2 seconds delay after user stops speaking
+
 // Stop speaking when mic is activated
 micButton.addEventListener("click", () => {
   if (isListening) {
@@ -45,41 +49,65 @@ function startListening() {
 
 function stopListening() {
   recognition.stop();
+  speechSynthesis.cancel(); // Stop any ongoing speech
   micButton.classList.remove("active");
   micButton.textContent = "🎤 Start Listening";
   isListening = false;
+  isSpeaking = false;
+  isProcessing = false; // Reset processing flag
+  if (silenceTimer) {
+    clearTimeout(silenceTimer); // Clear the silence timer
+  }
+  console.log("Stopped listening and speaking.");
 }
 
+// Updated recognition.onresult with silence detection
 recognition.onresult = async function (event) {
   if (isProcessing) return; // Ignore new results while processing the previous one
-  isProcessing = true; // Set processing flag
 
-  const transcript = event.results[event.results.length - 1][0].transcript
-    .trim()
-    .toLowerCase();
-  console.log("User said:", transcript);
+  // Reset the silence timer whenever new speech input is detected
+  if (silenceTimer) {
+    clearTimeout(silenceTimer);
+  }
 
-  if (transcript) {
-    displayMessage("user", transcript);
+  // Get the latest transcript
+  const result = event.results[event.results.length - 1];
+  const transcript = result[0].transcript.trim().toLowerCase();
 
-    if (transcript === "stop") {
-      displayMessage("assistant", "Listening stopped.");
-      stopListening();
-      isProcessing = false; // Reset processing flag
-      return;
-    }
+  // Ignore interim results (partial speech)
+  if (result.isFinal) {
+    console.log("User said:", transcript);
 
-    try {
-      await streamFromOpenAI(transcript);
-    } catch (error) {
-      console.error("OpenAI API Error:", error);
-      displayMessage(
-        "assistant",
-        "⚠ AI is currently unavailable. Please try again later."
-      );
-    } finally {
-      isProcessing = false; // Reset processing flag
-    }
+    // Start a new timer to wait for 2 seconds after the user stops speaking
+    silenceTimer = setTimeout(async () => {
+      isProcessing = true; // Set processing flag
+
+      if (transcript) {
+        displayMessage("user", transcript);
+
+        // Stop listening if the user says "stop"
+        if (transcript === "stop listening") {
+          displayMessage("assistant", "Listening stopped.");
+          stopListening(); // Stop everything
+          return;
+        }
+
+        // Only process if the user said something meaningful
+        if (transcript.trim().length > 0) {
+          try {
+            await streamFromOpenAI(transcript);
+          } catch (error) {
+            console.error("OpenAI API Error:", error);
+            displayMessage(
+              "assistant",
+              "⚠ AI is currently unavailable. Please try again later."
+            );
+          } finally {
+            isProcessing = false; // Reset processing flag
+          }
+        }
+      }
+    }, SILENCE_DELAY);
   }
 };
 
@@ -89,7 +117,7 @@ async function streamFromOpenAI(text) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer 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`,
+        Authorization: `Bearer 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`, // Replace with your OpenAI API key
       },
       body: JSON.stringify({
         model: "gpt-3.5-turbo",
@@ -112,14 +140,18 @@ async function streamFromOpenAI(text) {
 
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
-    let responseText = "";
+    let buffer = "";
 
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
 
       const chunk = decoder.decode(value);
-      const lines = chunk.split("\n").filter((line) => line.trim());
+      buffer += chunk;
+
+      // Process each line in the buffer
+      const lines = buffer.split("\n");
+      buffer = lines.pop(); // Save the last incomplete line back to the buffer
 
       for (const line of lines) {
         if (line.startsWith("data: ")) {
@@ -130,8 +162,7 @@ async function streamFromOpenAI(text) {
             const parsed = JSON.parse(data);
             const content = parsed.choices[0]?.delta?.content || "";
             if (content) {
-              responseText += content;
-              contentSpan.textContent = responseText;
+              contentSpan.textContent += content;
               chatMessages.scrollTop = chatMessages.scrollHeight;
             }
           } catch (error) {
@@ -142,7 +173,7 @@ async function streamFromOpenAI(text) {
     }
 
     // Speak the response
-    speakText(responseText);
+    speakText(contentSpan.textContent);
   } catch (error) {
     console.error("Streaming Error:", error);
     displayMessage("assistant", "⚠ Error in AI response. Please try again.");
