@@ -86,7 +86,7 @@ recognition.onresult = async function (event) {
         displayMessage("user", transcript);
 
         // Stop listening if the user says "stop"
-        if (transcript === "stop the program") {
+        if (transcript === "stop listening") {
           displayMessage("assistant", "Listening stopped.");
           stopListening(); // Stop everything
           return;
