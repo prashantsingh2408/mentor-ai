@@ -65,80 +65,144 @@ const recognition = new (window.SpeechRecognition ||
       }
   
       try {
-        await streamFromOpenAI(transcript);
+        await graniteQuery(transcript);
       } catch (error) {
         console.error("OpenAI API Error:", error);
         displayMessage("assistant", "⚠ AI is currently unavailable. Please try again later.");
       }
     }
   };
+
+  //   IBM model 
+  // get ibm t
+  const apiKeys = "KeLVOKnelfNy0lwDEDQy4jbXX_FpUo47SyDGIJVOiW1D"
+  async function getIbmToken() {
+      const url = "https://iam.cloud.ibm.com/identity/token";
+      const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
+      const apiKey = apiKeys;
   
-  async function streamFromOpenAI(text) {
-    try {
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer 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`,
-        },
-        body: JSON.stringify({
-          model: "gpt-3.5-turbo",
-          messages: [{ role: "user", content: text }],
-          stream: true
-        })
+      if (!apiKey) {
+          throw new Error("IBM API Key not found. Set it as an environment variable.");
+      }
+  
+      const data = new URLSearchParams({
+          'grant_type': 'urn:ibm:params:oauth:grant-type:apikey',
+          'apikey': apiKey
       });
   
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`OpenAI Error: ${errorData.error.message}`);
+      try {
+          const response = await fetch(url, {
+              method: "POST",
+              headers,
+              body: data
+          });
+          const result = await response.json();
+          return result.access_token;
+      } catch (error) {
+          console.error("Error fetching IBM token:", error);
+          throw error;
       }
-  
-      // Create placeholder for streaming response
-      const responsePlaceholder = document.createElement('div');
-      responsePlaceholder.className = 'message assistant';
-      responsePlaceholder.innerHTML = '<b>AI:</b> <span class="content"></span>';
-      chatMessages.appendChild(responsePlaceholder);
-      const contentSpan = responsePlaceholder.querySelector('.content');
-  
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let responseText = '';
-  
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-  
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n').filter(line => line.trim());
-  
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const data = line.slice(6);
-            if (data === '[DONE]') continue;
-  
-            try {
-              const parsed = JSON.parse(data);
-              const content = parsed.choices[0]?.delta?.content || '';
-              if (content) {
-                responseText += content;
-                contentSpan.textContent = responseText;
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-              }
-            } catch (error) {
-              console.error('Error parsing chunk:', error);
-            }
-          }
-        }
-      }
-  
-      // Speak the response
-      speakText(responseText);
-  
-    } catch (error) {
-      console.error("Streaming Error:", error);
-      displayMessage("assistant", "⚠ Error in AI response. Please try again.");
-    }
   }
+  const token = await getIbmToken();
+  
+  async function graniteQuery(prompt) {
+      const url = "https://us-south.ml.cloud.ibm.com/ml/v1/text/generation?version=2023-05-29";
+      const headers = {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+      };
+      const payload = {
+          "input": `<|start_of_role|>system<|end_of_role|>PROMPT<|end_of_text|>\n`
+              + `<|start_of_role|>user<|end_of_role|>${prompt}<|end_of_text|>\n`
+              + `<|start_of_role|>assistant<|end_of_role|>`,
+          "parameters": { "max_new_tokens": 300 },
+          "model_id": "ibm/granite-13b-instruct-v2",
+          "project_id": "44e4e31f-bde1-4da6-85ec-7dfbb505cffa"
+      };
+  
+      try {
+          const response = await fetch(url, {
+              method: "POST",
+              headers,
+              body: JSON.stringify(payload)
+          });
+          const result = await response.json();
+          // console.log(result);
+  
+          return result.results[0].generated_text;
+      } catch (error) {
+          console.error("Error fetching Granite query:", error);
+          throw error;
+      }
+  }
+
+  // async function streamFromOpenAI(text) {
+  //   try {
+  //     const response = await fetch("https://api.openai.com/v1/chat/completions", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer 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`,
+  //       },
+  //       body: JSON.stringify({
+  //         model: "gpt-3.5-turbo",
+  //         messages: [{ role: "user", content: text }],
+  //         stream: true
+  //       })
+  //     });
+  
+  //     if (!response.ok) {
+  //       const errorData = await response.json();
+  //       throw new Error(`OpenAI Error: ${errorData.error.message}`);
+  //     }
+  
+  //     // Create placeholder for streaming response
+  //     const responsePlaceholder = document.createElement('div');
+  //     responsePlaceholder.className = 'message assistant';
+  //     responsePlaceholder.innerHTML = '<b>AI:</b> <span class="content"></span>';
+  //     chatMessages.appendChild(responsePlaceholder);
+  //     const contentSpan = responsePlaceholder.querySelector('.content');
+  
+  //     const reader = response.body.getReader();
+  //     const decoder = new TextDecoder();
+  //     let responseText = '';
+  
+  //     while (true) {
+  //       const { done, value } = await reader.read();
+  //       if (done) break;
+  
+  //       const chunk = decoder.decode(value);
+  //       const lines = chunk.split('\n').filter(line => line.trim());
+  
+  //       for (const line of lines) {
+  //         if (line.startsWith('data: ')) {
+  //           const data = line.slice(6);
+  //           if (data === '[DONE]') continue;
+  
+  //           try {
+  //             const parsed = JSON.parse(data);
+  //             const content = parsed.choices[0]?.delta?.content || '';
+  //             if (content) {
+  //               responseText += content;
+  //               contentSpan.textContent = responseText;
+  //               chatMessages.scrollTop = chatMessages.scrollHeight;
+  //             }
+  //           } catch (error) {
+  //             console.error('Error parsing chunk:', error);
+  //           }
+  //         }
+  //       }
+  //     }
+  
+  //     // Speak the response
+  //     speakText(responseText);
+  
+  //   } catch (error) {
+  //     console.error("Streaming Error:", error);
+  //     displayMessage("assistant", "⚠ Error in AI response. Please try again.");
+  //   }
+  // }
   
   function speakText(text) {
     // Stop any ongoing speech

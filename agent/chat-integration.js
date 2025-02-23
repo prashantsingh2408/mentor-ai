@@ -5,7 +5,7 @@ class ChatIntegration {
         this.messageInput = document.querySelector('input[type="text"]');
         this.sendButton = document.querySelector('.fa-paper-plane').parentElement;
         this.chatMessages = document.querySelector('.chat-messages');
-        
+        this.history = []; // to have the history
         this.setupEventListeners();
     }
 
@@ -29,7 +29,7 @@ class ChatIntegration {
             this.messageInput.value = '';
 
             // Get AI response
-            const response = await this.getAIResponse(message);
+            const response = await this.graniteQuery(message);
             this.addMessageToChat(response, false);
         } catch (error) {
             console.error('Error sending message:', error);
@@ -37,44 +37,104 @@ class ChatIntegration {
         }
     }
 
-    async getAIResponse(message) {
-        try {
-            const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${API_KEY}`
-                },
-                body: JSON.stringify({
-                    model: 'gpt-3.5-turbo',
-                    messages: [
-                        {
-                            role: 'system',
-                            content: `You are a language learning assistant. 
-                            If the user speaks in French, respond in French and provide corrections.
-                            If the user speaks in English, first respond in English, then provide the French translation.
-                            Be friendly and helpful.`
-                        },
-                        {
-                            role: 'user',
-                            content: message
-                        }
-                    ]
-                })
-            });
+    // IBM models
 
-            const data = await response.json();
-            return data.choices[0].message.content;
+
+
+//  this is for V2 unsin the history
+    async graniteQueryV2(message) {
+        const url = "http://localhost:8080/agent-chat";
+        const headers = {
+            "Content-Type": "application/json"
+        };
+        this.history.push({ role: "user", content: message });
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers,
+                body: JSON.stringify({ history: this.history, message }) // ✅ Envoi sous forme d'objet JSON
+            });
+    
+            if (!response.ok) {
+                throw new Error(`Erreur HTTP: ${response.status}`);
+            }
+    
+            const result = await response.json();
+            const botReply =  result.respons
+             this.history.push({ role: "assistant", content: botReply });
+            
+            return botReply;
         } catch (error) {
-            console.error('API Error:', error);
+            console.error("Error fetching Granite query:", error);
+            throw error;
+        }
+    }
+    async graniteQuery(message) {
+        const url = "http://localhost:8080/agent-chat";
+        const headers = {
+            "Content-Type": "application/json"
+        };
+        this.history.push({ role: "user", content: message });
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers,
+                body: JSON.stringify({message }) // ✅ Envoi sous forme d'objet JSON
+            });
+    
+            if (!response.ok) {
+                throw new Error(`Erreur HTTP: ${response.status}`);
+            }
+           
+            const result = await response.json();
+            const botReply =  result.response.replace(/<\|end_of_text\|>/g, '').trim();
+             this.history.push({ role: "assistant", content: botReply });
+            
+            return botReply;
+        } catch (error) {
+            console.error("Error fetching Granite query:", error);
             throw error;
         }
     }
 
+    // async getAIResponse(message) {
+    //     try {
+    //         const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //                 'Authorization': `Bearer ${API_KEY}`
+    //             },
+    //             body: JSON.stringify({
+    //                 model: 'gpt-3.5-turbo',
+    //                 messages: [
+    //                     {
+    //                         role: 'system',
+    //                         content: `You are a language learning assistant. 
+    //                         If the user speaks in French, respond in French and provide corrections.
+    //                         If the user speaks in English, first respond in English, then provide the French translation.
+    //                         Be friendly and helpful.`
+    //                     },
+    //                     {
+    //                         role: 'user',
+    //                         content: message
+    //                     }
+    //                 ]
+    //             })
+    //         });
+
+    //         const data = await response.json();
+    //         return data.choices[0].message.content;
+    //     } catch (error) {
+    //         console.error('API Error:', error);
+    //         throw error;
+    //     }
+    // }
+
     addMessageToChat(text, isUser) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `flex items-start max-w-3xl ${isUser ? 'ml-auto' : ''}`;
-        
+
         const messageHTML = `
             ${isUser ? `
                 <div class="mr-3 bg-primary-100 rounded-lg p-4">
@@ -96,7 +156,7 @@ class ChatIntegration {
                 </div>
             `}
         `;
-        
+
         messageDiv.innerHTML = messageHTML;
         this.chatMessages.appendChild(messageDiv);
         this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
